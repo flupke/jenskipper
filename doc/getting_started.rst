@@ -49,7 +49,7 @@ Overview of the imported directory
 ----------------------------------
 
 jobs.yaml
-    The list of jobs that are managed by jenskipper.
+    The list of jobs that are managed by jenskipper; see :doc:`jobs`.
 
 default_context.yaml
     The variables available to all templates.

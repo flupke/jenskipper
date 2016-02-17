@@ -11,16 +11,14 @@ repository, that should look like this::
     bar-tests:
       template: bar-tests/definition.xml
 
-The templates are processed by `Jinja <http://jinja.pocoo.org/>`_ before being
-sent to the Jenkins server. The templates are rendered with the variables
-defined in ``default_context.yaml``, which is empty at the beginning. Say you
-want to define a global email address where jobs send their failure
-notifications, you could define it in ``default_context.yaml``::
+Say you want to define a global email address where failure notifications must
+be sent. Open the ``default_context.yaml`` and define a new variable in it::
 
     default_email: luper.rouch@gmail.com
 
-Then you can use this variable in your templates. Here is the relevant portion
-of ``foo-tests/definition.xml`` where the email notifications are configured::
+This variable is then available in all templates through the `Jinja
+<http://jinja.pocoo.org/>`_ templating language. Open
+``foo-tests/definition.xml`` and look for the email notifications section::
 
     <hudson.tasks.Mailer plugin="mailer@1.15">
         <recipients>luper.rouch@gmail.com</recipients>
@@ -28,8 +26,8 @@ of ``foo-tests/definition.xml`` where the email notifications are configured::
         <sendToIndividuals>false</sendToIndividuals>
     </hudson.tasks.Mailer>
 
-You can use your newly defined variable by replacing ``luper.rouch@gmail.com``
-by ``{{ default_email }}``::
+You can use the ``default_email`` variable by replacing
+``luper.rouch@gmail.com`` with ``{{ default_email }}``::
 
     <hudson.tasks.Mailer plugin="mailer@1.15">
         <recipients>{{ default_email }}</recipients>
