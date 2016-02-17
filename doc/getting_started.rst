@@ -44,3 +44,18 @@ If you want to pull new jobs from the server::
 Note that you can't update existing jobs from the server. This is wanted,
 jenskipper operations are meant to be one way: after the initial import,
 Jenkins jobs are only updated from the jenskipper repository.
+
+Overview of the imported directory
+----------------------------------
+
+jobs.yaml
+    The list of jobs that are managed by jenskipper.
+
+default_context.yaml
+    The variables available to all templates.
+
+templates/
+    The jobs templates directory.
+
+pipelines.txt
+    A high-level view of how jobs are chained together; see :doc:`pipelines`.
