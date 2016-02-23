@@ -102,3 +102,19 @@ def test_walk_edges_from_loop_graph():
         walked_edges = list(graph.walk_edges_from(start_node))
         assert len(walked_edges) == 3
         assert set(walked_edges) == set(edges)
+
+
+def test_format():
+    # 1   2
+    #  \ /
+    #   3 5
+    #   |/
+    #   4
+    graph = digraph.DirectedGraph()
+    edges = [(1, 3), (2, 3), (3, 4), (5, 4)]
+    graph.add_edges_list(*edges)
+    assert graph.format().splitlines() == [
+        '1 > 3 > 4',
+        '2 > 3',
+        '5 > 4',
+    ]

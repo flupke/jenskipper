@@ -25,11 +25,13 @@ fails, but nothing will run if ``unit-tests`` fails.
 
 A job may also trigger more than one job::
 
-    A > (B, C)
+    A > B > D
+    A > C
 
 Or a job can be triggered by multiple jobs::
 
-    (A, B) > C
+    A > C
+    B > C
 
 In this last example, ``C`` will be triggered if ``A`` *or* ``B`` finishes
 successfully.

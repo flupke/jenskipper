@@ -130,6 +130,34 @@ class DirectedGraph(object):
                         visited.add(conn_node)
                         stack.append(conn_node)
 
+    def format(self):
+        '''
+        Render this graph in text form.
+        '''
+        lines = []
+        visited = set()
+        for node in sorted(self.roots()):
+            self._format(node, lines, [], visited)
+        formatted_lines = []
+        for bits in lines:
+            bits = ['%s' % b for b in bits]
+            formatted_lines.append(' > '.join(bits))
+        return '\n'.join(formatted_lines)
+
+    def _format(self, node, lines, cur_line, visited):
+        cur_line.append(node)
+        if node not in visited:
+            visited.add(node)
+            if self.children[node]:
+                for child in self.children[node]:
+                    self._format(child, lines, cur_line, visited)
+            else:
+                lines.append(cur_line[:])
+                cur_line[:] = []
+        else:
+            lines.append(cur_line[:])
+            cur_line[:] = []
+
 
 class Node(object):
     '''
@@ -148,12 +176,17 @@ class Node(object):
         return hash(self.name)
 
     def __eq__(self, other):
-        if isinstance(other, Node):
-            return self.name == other.name
-        return self.name == other
+        return self.name == _get_node_name(other)
+
+    def __cmp__(self, other):
+        return cmp(self.name, _get_node_name(other))
 
     def __repr__(self):
         return '<Node %r>' % self.name
 
     def __str__(self):
         return str(self.name)
+
+
+def _get_node_name(node):
+    return getattr(node, 'name', node)
