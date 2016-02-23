@@ -118,3 +118,13 @@ def test_format():
         '2 > 3',
         '5 > 4',
     ]
+
+
+def test_format_edges_reprs():
+    # 1 - 2 - 3
+    graph = digraph.DirectedGraph()
+    edges = [(1, 2), (2, 3, ' |> ')]
+    graph.add_edges_list(*edges)
+    assert graph.format().splitlines() == [
+        '1 > 2 |> 3',
+    ]

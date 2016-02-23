@@ -57,6 +57,7 @@ class DirectedGraph(object):
         self.nodes = {}
         self.children = defaultdict(set)
         self.parents = defaultdict(set)
+        self.edges_reprs = {}
 
     def iter_edges(self):
         for parent, children in self.children.items():
@@ -80,15 +81,16 @@ class DirectedGraph(object):
             for parents in self.parents.values():
                 parents.discard(name)
 
-    def add_edge(self, parent, child):
+    def add_edge(self, parent, child, edge_repr=' > '):
         parent_node = self.add_node(parent)
         child_node = self.add_node(child)
         self.children[parent].add(child_node)
         self.parents[child].add(parent_node)
+        self.edges_reprs[(parent, child)] = edge_repr
 
     def add_edges_list(self, *edges):
-        for parent, child in edges:
-            self.add_edge(parent, child)
+        for edge in edges:
+            self.add_edge(*edge)
 
     def remove_edge(self, parent, child):
         self.children[parent].discard(child)
@@ -137,20 +139,21 @@ class DirectedGraph(object):
         lines = []
         visited = set()
         for node in sorted(self.roots()):
-            self._format(node, lines, [], visited)
+            self._format(None, node, lines, [], visited)
         formatted_lines = []
         for bits in lines:
-            bits = ['%s' % b for b in bits]
-            formatted_lines.append(' > '.join(bits))
+            formatted_lines.append(''.join(bits))
         return '\n'.join(formatted_lines)
 
-    def _format(self, node, lines, cur_line, visited):
-        cur_line.append(node)
+    def _format(self, parent_node, node, lines, cur_line, visited):
+        if parent_node is not None:
+            cur_line.append(self.edges_reprs[(parent_node, node)])
+        cur_line.append(str(node))
         if node not in visited:
             visited.add(node)
             if self.children[node]:
                 for child in self.children[node]:
-                    self._format(child, lines, cur_line, visited)
+                    self._format(node, child, lines, cur_line, visited)
             else:
                 lines.append(cur_line[:])
                 cur_line[:] = []
