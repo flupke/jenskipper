@@ -1,0 +1,34 @@
+{
+  "unlabeledLoad": {},
+  "jobs": [
+    {
+      "url": "https://jenkins.host.com/job/test-project-for-jenskipper/",
+      "color": "notbuilt",
+      "name": "test-project-for-jenskipper"
+    }
+  ],
+  "description": null,
+  "views": [
+    {
+      "url": "https://jenkins.host.com/",
+      "name": "All"
+    }
+  ],
+  "quietingDown": false,
+  "assignedLabels": [
+    {},
+    {}
+  ],
+  "nodeDescription": "the master Jenkins node",
+  "useCrumbs": false,
+  "numExecutors": 8,
+  "mode": "NORMAL",
+  "slaveAgentPort": 0,
+  "overallLoad": {},
+  "useSecurity": false,
+  "primaryView": {
+    "url": "https://jenkins.host.com/",
+    "name": "All"
+  },
+  "nodeName": ""
+}
