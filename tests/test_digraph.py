@@ -126,6 +126,19 @@ def test_format_quoted():
     assert graph.format() == "'foo bar' > baz"
 
 
+def test_format_many_on_one():
+    #   1
+    #  / \
+    # 2   3
+    graph = digraph.DirectedGraph()
+    edges = [(1, 2), (1, 3)]
+    graph.add_edges_list(*edges)
+    assert graph.format().splitlines() == [
+        '1 > 2',
+        '1 > 3',
+    ]
+
+
 def test_format_edges_reprs():
     # 1 - 2 - 3
     graph = digraph.DirectedGraph()

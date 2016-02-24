@@ -151,6 +151,8 @@ class DirectedGraph(object):
         return u'\n'.join(formatted_lines)
 
     def _format(self, parent_node, node, lines, cur_line, visited):
+        if not cur_line and parent_node is not None:
+            cur_line.append(pipes.quote(unicode(parent_node)))
         if parent_node is not None:
             cur_line.append(self.edges_reprs[(parent_node, node)])
         cur_line.append(pipes.quote(unicode(node)))
