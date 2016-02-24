@@ -28,9 +28,14 @@ setup(
     install_requires=[
         'click',
         'requests',
+        'pyyaml',
     ],
     extras_require={
-        'dev': ['pytest', 'pytest-localserver', 'pytest-cov'],
+        'dev': [
+            'pytest',
+            'pytest-localserver',
+            'pytest-cov',
+        ],
     },
     entry_points={
         'console_scripts':
