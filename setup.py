@@ -29,6 +29,9 @@ setup(
         'click',
         'requests',
     ],
+    extras_require={
+        'dev': ['pytest', 'pytest-localserver'],
+    },
     entry_points={
         'console_scripts':
             ['jenskipper=jenskipper.cli:main']
