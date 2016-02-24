@@ -1,3 +1,5 @@
+import os.path as op
+
 from xml.etree import ElementTree
 
 
@@ -23,3 +25,7 @@ def extract_pipeline_conf(conf):
 
 def merge_pipeline_conf(conf):
     pass
+
+
+def get_default_template_fname(base_dir, job_name):
+    return op.join(base_dir, 'templates', job_name, 'config.xml')
