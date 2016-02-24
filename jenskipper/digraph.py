@@ -78,12 +78,10 @@ class DirectedGraph(object):
     def remove_node(self, name):
         if name in self.nodes:
             del self.nodes[name]
-            self.children[name].clear()
-            self.parents[name].clear()
-            for children in self.children.values():
-                children.discard(name)
-            for parents in self.parents.values():
-                parents.discard(name)
+            for child in self.children[name].copy():
+                self.remove_edge(name, child)
+            for parent in self.parents[name].copy():
+                self.remove_edge(parent, name)
 
     def add_edge(self, parent, child, edge_repr=' > '):
         parent_node = self.add_node(parent)
@@ -99,6 +97,7 @@ class DirectedGraph(object):
     def remove_edge(self, parent, child):
         self.children[parent].discard(child)
         self.parents[child].discard(parent)
+        del self.edges_reprs[(parent, child)]
 
     def copy(self):
         return copy.deepcopy(self)
