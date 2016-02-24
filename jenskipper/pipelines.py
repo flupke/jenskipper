@@ -17,7 +17,7 @@ def get_fname(base_dir):
     return op.join(base_dir, 'pipelines.txt')
 
 
-def format_pipe_bits(bits):
+def format_pipes_bits(bits):
     '''
     Assemble *bits* of a pipeline as text.
 
