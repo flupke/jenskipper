@@ -1,5 +1,7 @@
 import copy
 from collections import defaultdict
+import shlex
+import pipes
 
 from .exceptions import CyclicDependency
 
@@ -145,13 +147,13 @@ class DirectedGraph(object):
             self._format(None, node, lines, [], visited)
         formatted_lines = []
         for bits in lines:
-            formatted_lines.append(''.join(bits))
-        return '\n'.join(formatted_lines)
+            formatted_lines.append(u''.join(bits))
+        return u'\n'.join(formatted_lines)
 
     def _format(self, parent_node, node, lines, cur_line, visited):
         if parent_node is not None:
             cur_line.append(self.edges_reprs[(parent_node, node)])
-        cur_line.append(str(node))
+        cur_line.append(pipes.quote(unicode(node)))
         if node not in visited:
             visited.add(node)
             if self.children[node]:
