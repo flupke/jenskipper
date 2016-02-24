@@ -166,6 +166,28 @@ class DirectedGraph(object):
             lines.append(cur_line[:])
             cur_line[:] = []
 
+    @classmethod
+    def parse(cls, text):
+        '''
+        Parse the directed graph described in *text*.
+        '''
+        graph = cls()
+        for line_num, line in enumerate(text.splitlines()):
+            line_num += 1
+            bits = shlex.split(line)
+            if bits:
+                if len(bits) % 2 != 1:
+                    raise ValueError('syntax error at line %s, expected an '
+                                     'odd number of elements' % line_num)
+                prev_node = bits[0]
+                graph.add_node(prev_node)
+                for i in range(1, len(bits), 2):
+                    edge_repr = bits[i]
+                    node = bits[i + 1]
+                    graph.add_edge(prev_node, node, edge_repr)
+                    prev_node = node
+        return graph
+
 
 class Node(object):
     '''
@@ -192,8 +214,8 @@ class Node(object):
     def __repr__(self):
         return '<Node %r>' % self.name
 
-    def __str__(self):
-        return str(self.name)
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 def _get_node_name(node):

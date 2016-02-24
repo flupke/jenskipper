@@ -120,6 +120,12 @@ def test_format():
     ]
 
 
+def test_format_quoted():
+    graph = digraph.DirectedGraph()
+    graph.add_edge('foo bar', 'baz')
+    assert graph.format() == "'foo bar' > baz"
+
+
 def test_format_edges_reprs():
     # 1 - 2 - 3
     graph = digraph.DirectedGraph()
@@ -128,3 +134,25 @@ def test_format_edges_reprs():
     assert graph.format().splitlines() == [
         '1 > 2 |> 3',
     ]
+
+
+def test_parse():
+    lines = [
+        '1 > 3 > 4',
+        '2 > 3',
+        '5 > 4',
+    ]
+    graph = digraph.DirectedGraph.parse('\n'.join(lines))
+    edges = set(graph.iter_edges())
+    assert edges == {
+        ('1', '3'),
+        ('2', '3'),
+        ('3', '4'),
+        ('5', '4'),
+    }
+
+
+def test_parse_quoted():
+    graph = digraph.DirectedGraph.parse("'foo bar' !> baz")
+    edges = list(graph.iter_edges(with_reprs=True))
+    assert edges == [('foo bar', 'baz', '!>')]
