@@ -59,10 +59,14 @@ class DirectedGraph(object):
         self.parents = defaultdict(set)
         self.edges_reprs = {}
 
-    def iter_edges(self):
+    def iter_edges(self, with_reprs=False):
         for parent, children in self.children.items():
             for child in children:
-                yield (parent, child)
+                edge = (parent, child)
+                if with_reprs:
+                    yield edge + (self.edges_reprs[edge],)
+                else:
+                    yield edge
 
     def add_node(self, name):
         if name not in self.nodes:
