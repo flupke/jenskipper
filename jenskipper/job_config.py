@@ -40,11 +40,10 @@ def get_default_context_fname(base_dir):
 
 def format_default_jobs_defs(jobs_templates, dest_dir):
     lines = []
-    yaml_data = {}
-    for job_name, template_fname in jobs_templates.items():
+    for job_name in sorted(jobs_templates):
+        template_fname = jobs_templates[job_name]
         rel_template_fname = template_fname[len(dest_dir) + 1:]
         lines.append('%s:' % job_name)
         lines.append('  template: %s' % rel_template_fname)
         lines.append('')
-        yaml_data[job_name] = {'template': template_fname}
     return '\n'.join(lines)
