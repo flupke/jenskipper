@@ -30,7 +30,7 @@ setup(
         'requests',
     ],
     extras_require={
-        'dev': ['pytest', 'pytest-localserver'],
+        'dev': ['pytest', 'pytest-localserver', 'pytest-cov'],
     },
     entry_points={
         'console_scripts':
