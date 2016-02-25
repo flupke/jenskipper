@@ -1,5 +1,3 @@
-import os.path as op
-
 from . import digraph
 
 
@@ -9,13 +7,6 @@ GRAPH_EDGES_REPRS = {
     'FAILURE': ' ~> ',
 }
 JENKINS_LINK_TYPES = {v.strip(): k for k, v in GRAPH_EDGES_REPRS.items()}
-
-
-def get_fname(base_dir):
-    '''
-    Get the name of the pipelines file in *base_dir*.
-    '''
-    return op.join(base_dir, 'pipelines.txt')
 
 
 def format_pipes_bits(bits):

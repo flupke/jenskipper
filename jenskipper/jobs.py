@@ -1,8 +1,8 @@
-import os.path as op
 from xml.etree import ElementTree
 
 import jinja2
-import yaml
+
+from . import repository
 
 
 LINK_ELTS = {
@@ -77,65 +77,12 @@ def _create_elt(tag, text=None):
     return elt
 
 
-def create_templates_env(base_dir='.'):
-    templates_dir = get_templates_dir(base_dir)
-    return jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir))
-
-
-def get_templates_dir(base_dir):
-    return op.join(base_dir, 'templates')
-
-
-def get_default_template_fname(base_dir, job_name):
-    templates_dir = get_templates_dir(base_dir)
-    return op.join(templates_dir, job_name, 'config.xml')
-
-
-def get_jobs_defs_fname(base_dir):
-    return op.join(base_dir, 'jobs.yaml')
-
-
-def get_default_context_fname(base_dir):
-    return op.join(base_dir, 'default_context.yaml')
-
-
-def format_default_jobs_defs(jobs_templates, base_dir):
-    '''
-    Format the default jobs definitions on initial import.
-    '''
-    lines = []
-    templates_dir = get_templates_dir(base_dir)
-    for job_name in sorted(jobs_templates):
-        template_fname = jobs_templates[job_name]
-        rel_template_fname = template_fname[len(templates_dir) + 1:]
-        lines.append('%s:' % job_name)
-        lines.append('  template: %s' % rel_template_fname)
-        lines.append('')
-    return '\n'.join(lines)
-
-
-def parse_jobs(fp, base_dir, default_context):
-    jobs_defs = yaml.safe_load(fp)
-    return {k: _normalize_job_def(v, base_dir, default_context)
-            for k, v in jobs_defs.items()}
-
-
-def _normalize_job_def(job_def, base_dir, default_context):
-    job_def_context = job_def.get('context', {})
-    context = default_context.copy()
-    context.update(job_def_context)
-    return {
-        'template': job_def['template'],
-        'context': context,
-    }
-
-
-def render_jobs(jobs_defs, pipelines, base_dir):
-    ret = {}
-    env = create_templates_env(base_dir)
-    for job_name, job_def in jobs_defs.items():
-        template = env.get_template(job_def['template'])
-        rendered = template.render(**job_def['context'])
-        merged = merge_pipeline_conf(rendered, pipelines)
-        ret[job_name] = merged
-    return merged
+def render_job(job_def, pipe_info, base_dir):
+    templates_dir = repository.get_templates_dir(base_dir)
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir))
+    template = env.get_template(job_def['template'])
+    rendered = template.render(**job_def['context'])
+    if pipe_info is not None:
+        parents, link_type = pipe_info
+        rendered = merge_pipeline_conf(rendered, parents, link_type)
+    return rendered
