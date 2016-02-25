@@ -1,9 +1,9 @@
-from jenskipper.job_config import extract_pipeline_conf
+from jenskipper import jobs
 
 
 def test_extract_pipeline_conf(data_dir):
     conf = data_dir.join('job_config.xml').open().read()
-    pipe_bits, conf = extract_pipeline_conf(conf)
+    pipe_bits, conf = jobs.extract_pipeline_conf(conf)
     assert pipe_bits == (['stupeflix'], 'SUCCESS')
     print conf
     assert conf == '''<project>
