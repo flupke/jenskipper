@@ -8,6 +8,7 @@ GRAPH_EDGES_REPRS = {
     'UNSTABLE': ' ?> ',
     'FAILURE': ' ~> ',
 }
+JENKINS_LINK_TYPES = {v.strip(): k for k, v in GRAPH_EDGES_REPRS.items()}
 
 
 def get_fname(base_dir):
@@ -19,7 +20,7 @@ def get_fname(base_dir):
 
 def format_pipes_bits(bits):
     '''
-    Assemble *bits* of a pipeline as text.
+    Assemble *bits* of pipelines as text.
 
     *bits* must be a dict of ``(parents_list, upstream_link_type)`` pairs,
     indexed by job name.
@@ -30,3 +31,19 @@ def format_pipes_bits(bits):
         for parent in parents:
             graph.add_edge(parent, child, edges_repr)
     return graph.format()
+
+
+def parse_pipelines(text):
+    '''
+    Parse the pipelines defined in *text*.
+    '''
+    graph = digraph.DirectedGraph.parse(text)
+    ret = {}
+    for child, parents in graph.parents.items():
+        parents = sorted([unicode(p) for p in parents])
+        first_parent = parents[0]
+        edge = (first_parent, child)
+        edge_repr = graph.edges_reprs[edge]
+        link_type = JENKINS_LINK_TYPES[edge_repr]
+        ret[child] = (parents, link_type)
+    return ret
