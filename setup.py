@@ -27,8 +27,9 @@ setup(
     zip_safe=False,
     install_requires=[
         'click',
-        'requests',
+        'requests[security]',
         'pyyaml',
+        'jinja2',
     ],
     extras_require={
         'dev': [
