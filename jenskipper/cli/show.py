@@ -1,6 +1,6 @@
 import click
 
-from . import jobs
+from .. import jobs
 
 
 @click.command()

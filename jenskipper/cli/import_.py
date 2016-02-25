@@ -4,9 +4,9 @@ import sys
 
 import click
 
-from . import jenkins_api
-from . import jobs
-from . import pipelines
+from .. import jenkins_api
+from .. import jobs
+from .. import pipelines
 
 
 @click.command('import')
