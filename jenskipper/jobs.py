@@ -5,6 +5,25 @@ import jinja2
 import yaml
 
 
+LINK_ELTS = {
+    'SUCCESS': (
+        ('ordinal', '0'),
+        ('color', 'BLUE'),
+        ('completeBuild', 'true'),
+    ),
+    'UNSTABLE': (
+        ('ordinal', '1'),
+        ('color', 'YELLOW'),
+        ('completeBuild', 'true'),
+    ),
+    'FAILURE':  (
+        ('ordinal', '2'),
+        ('color', 'RED'),
+        ('completeBuild', 'true'),
+    ),
+}
+
+
 def extract_pipeline_conf(conf):
     '''
     Remove and parse the pipeline bits in XML job definition *conf*.
@@ -21,12 +40,41 @@ def extract_pipeline_conf(conf):
         parent_map[rbt_elt].remove(rbt_elt)
     else:
         pipe_bits = None
-    pruned_conf = ElementTree.tostring(tree, encoding='UTF-8', method='xml')
+    pruned_conf = _format_xml_tree(tree)
     return pipe_bits, pruned_conf
 
 
-def merge_pipeline_conf(conf):
-    pass
+def _format_xml_tree(tree):
+    return ElementTree.tostring(tree, encoding='UTF-8', method='xml')
+
+
+def merge_pipeline_conf(conf, parents, link_type):
+    '''
+    Merge back pipeline informations in job configuration *conf*.
+
+    *parents* is a list of parent jobs names, and *link_type* the relationship
+    to them (one of "SUCCESS", "UNSTABLE" or "FAILURE").
+    '''
+    tree = ElementTree.fromstring(conf.encode('utf8'))
+    trigger = _create_elt('jenkins.triggers.ReverseBuildTrigger')
+    trigger.append(_create_elt('spec'))
+    upstream_projects = _create_elt('upstreamProjects', ', '.join(parents))
+    trigger.append(upstream_projects)
+    threshold = _create_elt('threshold')
+    threshold.append(_create_elt('name', link_type))
+    for elt_name, elt_text in LINK_ELTS[link_type]:
+        elt = _create_elt(elt_name, elt_text)
+        threshold.append(elt)
+    trigger.append(threshold)
+    triggers = tree.find('.//triggers')
+    triggers.append(trigger)
+    return _format_xml_tree(tree)
+
+
+def _create_elt(tag, text=None):
+    elt = ElementTree.Element(tag)
+    elt.text = text
+    return elt
 
 
 def create_templates_env(base_dir='.'):

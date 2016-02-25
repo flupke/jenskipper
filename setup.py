@@ -14,9 +14,7 @@ setup(
     version=__version__,
     description="",
     long_description=README + '\n\n' + NEWS,
-    classifiers=[
-      # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-    ],
+    classifiers=[],
     keywords='',
     author='Luper Rouch',
     author_email='luper.rouch@gmail.com',
@@ -36,6 +34,7 @@ setup(
             'pytest',
             'pytest-localserver',
             'pytest-cov',
+            'lxml',
         ],
     },
     entry_points={
