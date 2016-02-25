@@ -47,3 +47,7 @@ def test_extract_pipeline_conf(data_dir):
   <publishers />
   <buildWrappers />
 </project>'''  # NOQA
+
+
+def test_merge_pipeline_conf():
+    pass
