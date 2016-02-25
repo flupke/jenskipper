@@ -21,7 +21,7 @@ def extract_pipeline_conf(conf):
         parent_map[rbt_elt].remove(rbt_elt)
     else:
         pipe_bits = None
-    pruned_conf = ElementTree.tostring(tree)
+    pruned_conf = ElementTree.tostring(tree, encoding='UTF-8', method='xml')
     return pipe_bits, pruned_conf
 
 

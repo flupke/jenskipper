@@ -5,8 +5,11 @@ def test_extract_pipeline_conf(data_dir):
     conf = data_dir.join('job_config.xml').open().read()
     pipe_bits, conf = jobs.extract_pipeline_conf(conf)
     assert pipe_bits == (['stupeflix'], 'SUCCESS')
-    print conf
-    assert conf == '''<project>
+    assert conf == JOB_WITHOUT_PIPELINE
+
+
+JOB_WITHOUT_PIPELINE = '''<?xml version='1.0' encoding='UTF-8'?>
+<project>
   <actions />
   <description />
   <keepDependencies>false</keepDependencies>
