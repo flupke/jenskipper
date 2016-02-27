@@ -28,6 +28,7 @@ setup(
         'requests[security]',
         'pyyaml',
         'jinja2',
+        'configobj',
     ],
     extras_require={
         'dev': [

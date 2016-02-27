@@ -85,3 +85,7 @@ def get_pipelines(base_dir):
     fname = get_pipelines_fname(base_dir)
     with open(fname) as fp:
         return pipelines.parse_pipelines(fp.read())
+
+
+def get_conf_fname(base_dir):
+    return op.join(base_dir, CONF_FNAME)
