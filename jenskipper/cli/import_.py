@@ -20,7 +20,8 @@ def import_(jenkins_url, dest_dir):
     if op.exists(dest_dir):
         click.secho('Destination dir "%s" already exists' % dest_dir, fg='red')
         sys.exit(1)
-    jobs_names = jenkins_api.list_jobs(jenkins_url)
+    jobs_names, jenkins_url = jenkins_api.handle_auth(jenkins_api.list_jobs,
+                                                      jenkins_url)
     with click.progressbar(jobs_names, label='Importing jobs') as bar:
         pipes_bits, jobs_templates = _write_jobs_templates(bar, dest_dir,
                                                            jenkins_url)
@@ -33,7 +34,11 @@ def _write_jobs_templates(jobs_names, dest_dir, jenkins_url):
     pipes_bits = {}
     jobs_templates = {}
     for job_name in jobs_names:
-        config = jenkins_api.get_job_config(jenkins_url, job_name)
+        config, jenkins_url = jenkins_api.handle_auth(
+            jenkins_api.get_job_config,
+            jenkins_url,
+            job_name
+        )
         pipe_info, conf = jobs.extract_pipeline_conf(config)
         if pipe_info is not None:
             pipes_bits[job_name] = pipe_info

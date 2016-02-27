@@ -18,15 +18,13 @@ def search_base_dir(from_dir='.', up_to_dir='/'):
     *up_to_dir* or when a directory that looks like a jenskipper repository is
     found.
 
-    Return the base directory of the repository, or raise a
-    :class:`~jenskipper.exceptions.RepositoryNotFound` error.
+    Return the base directory of the repository, or None.
     '''
     cur_dir = op.abspath(from_dir)
     while cur_dir != up_to_dir:
         if CONF_FNAME in os.listdir(cur_dir):
             return cur_dir
         cur_dir = op.dirname(cur_dir)
-    raise exceptions.RepositoryNotFound(from_dir)
 
 
 def get_templates_dir(base_dir):
