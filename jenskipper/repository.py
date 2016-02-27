@@ -4,7 +4,6 @@ import os.path as op
 import yaml
 
 from . import pipelines
-from . import exceptions
 
 
 CONF_FNAME = '.jenskipper.conf'

@@ -17,13 +17,16 @@ def get_local_conf():
     return configobj.ConfigObj(fname)
 
 
-def get_repository_conf():
-    base_dir = repository.search_base_dir()
+def get_repository_conf(repos_dir='.'):
+    base_dir = repository.search_base_dir(from_dir=repos_dir)
     if base_dir is not None:
         fname = repository.get_conf_fname(base_dir)
         return configobj.ConfigObj(fname)
     else:
-        return {}
+        fname = repository.get_conf_fname(repos_dir)
+        obj = configobj.ConfigObj()
+        obj.filename = fname
+        return obj
 
 
 def get_conf():
@@ -47,9 +50,9 @@ def get(path):
     return obj
 
 
-def set(path, value, in_repos=True):
+def set(path, value, in_repos=True, repos_dir='.'):
     if in_repos:
-        obj = conf = get_repository_conf()
+        obj = conf = get_repository_conf(repos_dir)
     else:
         obj = conf = get_local_conf()
     keys = list(path)
