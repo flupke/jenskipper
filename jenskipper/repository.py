@@ -1,8 +1,32 @@
+import os
 import os.path as op
 
 import yaml
 
 from . import pipelines
+from . import exceptions
+
+
+CONF_FNAME = '.jenskipper.conf'
+
+
+def search_base_dir(from_dir='.', up_to_dir='/'):
+    '''
+    Search the base dir of a jenskipper repository.
+
+    The search starts at *from_dir* and continues in parent directories, up to
+    *up_to_dir* or when a directory that looks like a jenskipper repository is
+    found.
+
+    Return the base directory of the repository, or raise a
+    :class:`~jenskipper.exceptions.RepositoryNotFound` error.
+    '''
+    cur_dir = op.abspath(from_dir)
+    while cur_dir != up_to_dir:
+        if CONF_FNAME in os.listdir(cur_dir):
+            return cur_dir
+        cur_dir = op.dirname(cur_dir)
+    raise exceptions.RepositoryNotFound(from_dir)
 
 
 def get_templates_dir(base_dir):
