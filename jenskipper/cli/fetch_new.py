@@ -15,6 +15,9 @@ from .. import exceptions
               'existing files.')
 @decorators.repos_command
 def fetch_new(base_dir, force):
+    '''
+    Fetch new jobs in an existing repository.
+    '''
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     repos_jobs = repository.get_jobs_defs(base_dir)
     server_jobs, jenkins_url = jenkins_api.handle_auth(base_dir,
