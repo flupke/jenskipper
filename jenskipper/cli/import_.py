@@ -26,20 +26,28 @@ def import_(jenkins_url, dest_dir):
                                                       jenkins_api.list_jobs,
                                                       jenkins_url)
     with click.progressbar(jobs_names, label='Importing jobs') as bar:
-        pipes_bits, jobs_templates = _write_jobs_templates(bar, dest_dir,
-                                                           jenkins_url)
-    _write_jobs_defs(jobs_templates, dest_dir)
-    _write_pipelines(pipes_bits, dest_dir)
+        pipes_bits, jobs_templates = write_jobs_templates(dest_dir,
+                                                          jenkins_url,
+                                                          bar)
+    write_jobs_defs(dest_dir, jobs_templates, 'w')
+    write_pipelines(dest_dir, pipes_bits, 'w')
     _write_default_context(dest_dir)
     _write_conf(dest_dir, jenkins_url)
 
 
-def _write_jobs_templates(jobs_names, dest_dir, jenkins_url):
+def write_jobs_templates(base_dir, jenkins_url, jobs_names):
+    '''
+    Retrieve job templates *jobs_names* from *jenkins_url* server in repository
+    at *base_dir*.
+
+    Return a ``(pipes_bits, jobs_templates)`` tuple, suitable for
+    :func:`write_pipelines` and :func:`write_jobs_defs` respectively.
+    '''
     pipes_bits = {}
     jobs_templates = {}
     for job_name in jobs_names:
         config, jenkins_url = jenkins_api.handle_auth(
-            dest_dir,
+            base_dir,
             jenkins_api.get_job_config,
             jenkins_url,
             job_name
@@ -47,7 +55,7 @@ def _write_jobs_templates(jobs_names, dest_dir, jenkins_url):
         pipe_info, conf = jobs.extract_pipeline_conf(config)
         if pipe_info is not None:
             pipes_bits[job_name] = pipe_info
-        tpl_fname = _get_job_template_fname(dest_dir, job_name)
+        tpl_fname = _get_job_template_fname(base_dir, job_name)
         tpl_dir = op.dirname(tpl_fname)
         if not op.exists(tpl_dir):
             os.makedirs(tpl_dir)
@@ -57,22 +65,31 @@ def _write_jobs_templates(jobs_names, dest_dir, jenkins_url):
     return pipes_bits, jobs_templates
 
 
-def _write_jobs_defs(jobs_templates, dest_dir):
-    fname = repository.get_jobs_defs_fname(dest_dir)
-    text = _format_default_jobs_defs(jobs_templates, dest_dir)
-    with open(fname, 'w') as fp:
+def write_jobs_defs(base_dir, jobs_templates, mode, pad_lines=0):
+    '''
+    Write *jobs_templates* jobs definitions in the YAML file in repository at
+    *base_dir*, opening the jobs definition file with *mode*.
+    '''
+    fname = repository.get_jobs_defs_fname(base_dir)
+    text = _format_default_jobs_defs(jobs_templates, base_dir)
+    with open(fname, mode) as fp:
+        fp.write('\n' * pad_lines)
         fp.write(text)
 
 
-def _write_pipelines(pipes_bits, dest_dir):
-    fname = repository.get_pipelines_fname(dest_dir)
+def write_pipelines(base_dir, pipes_bits, mode):
+    '''
+    Write pipelines bits *pipes_bits* in the pipelines file of the repository
+    in *base_dir*, opening the pipelines file with *mode*.
+    '''
+    fname = repository.get_pipelines_fname(base_dir)
     text = pipelines.format_pipes_bits(pipes_bits)
-    with open(fname, 'w') as fp:
+    with open(fname, mode) as fp:
         fp.write(text)
 
 
-def _write_default_context(dest_dir):
-    fname = repository.get_default_context_fname(dest_dir)
+def _write_default_context(base_dir):
+    fname = repository.get_default_context_fname(base_dir)
     open(fname, 'w').close()
 
 
@@ -94,6 +111,6 @@ def _format_default_jobs_defs(jobs_templates, base_dir):
     return '\n'.join(lines)
 
 
-def _write_conf(dest_dir, jenkins_url):
+def _write_conf(base_dir, jenkins_url):
     canonical_url, _, _ = jenkins_api.split_auth(jenkins_url)
-    conf.set_in_repos(dest_dir, ['server', 'location'], canonical_url)
+    conf.set_in_repos(base_dir, ['server', 'location'], canonical_url)
