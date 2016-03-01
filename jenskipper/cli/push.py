@@ -30,7 +30,7 @@ def _push_jobs(base_dir, jenkins_url, pipelines, jobs_names, jobs_defs):
     ret = 0
     for job_name in jobs_names:
         if job_name not in jobs_defs:
-            click.secho('unknown job: %s' % job_name, fg='red', bold=True)
+            click.secho('Unknown job: %s' % job_name, fg='red', bold=True)
             ret = 1
             continue
         job_def = jobs_defs[job_name]
