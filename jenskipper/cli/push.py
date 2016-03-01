@@ -18,8 +18,8 @@ def push(jobs_names, jk_dir):
     '''
     base_dir = repository.check_dir_is_in_repository(jk_dir)
     jenkins_url = conf.get(base_dir, ['server', 'location'])
-    jobs_defs = repository.get_jobs_defs(jk_dir)
-    pipelines = repository.get_pipelines(jk_dir)
+    jobs_defs = repository.get_jobs_defs(base_dir)
+    pipelines = repository.get_pipelines(base_dir)
     if not jobs_names:
         jobs_names = jobs_defs.keys()
     with click.progressbar(jobs_names, label='Pushing jobs') as bar:
