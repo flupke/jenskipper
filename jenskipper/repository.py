@@ -1,7 +1,9 @@
 import os
 import os.path as op
+import sys
 
 import yaml
+import click
 
 from . import pipelines
 
@@ -24,6 +26,21 @@ def search_base_dir(from_dir='.', up_to_dir='/'):
         if CONF_FNAME in os.listdir(cur_dir):
             return cur_dir
         cur_dir = op.dirname(cur_dir)
+
+
+def check_dir_is_in_repository(from_dir, retcode=1):
+    '''
+    Check if *from_dir* does belong to a jenskipper repository.
+
+    If it doesn't, print an error message and exit program with *retcode*. If
+    it does, return the base directory of the repository.
+    '''
+    base_dir = search_base_dir(from_dir)
+    if base_dir is None:
+        click.secho('Could not find a jenskipper repository in "%s" and its '
+                    'parent directories' % from_dir, fg='red', bold=True)
+        sys.exit(1)
+    return base_dir
 
 
 def get_templates_dir(base_dir):

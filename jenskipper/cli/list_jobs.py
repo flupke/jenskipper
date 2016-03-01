@@ -1,5 +1,3 @@
-import sys
-
 import click
 
 from .. import repository
@@ -12,11 +10,7 @@ def list_jobs(jk_dir):
     '''
     List jobs in a repository.
     '''
-    base_dir = repository.search_base_dir(jk_dir)
-    if base_dir is None:
-        click.secho('Could not find a jenskipper repository in "%s" and its '
-                    'parent directories' % jk_dir, fg='red', bold=True)
-        sys.exit(1)
+    base_dir = repository.check_dir_is_in_repository(jk_dir)
     jobs_defs = repository.get_jobs_defs(base_dir)
     for name in sorted(jobs_defs):
         print name
