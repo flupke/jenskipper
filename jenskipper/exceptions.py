@@ -10,3 +10,8 @@ class CyclicDependency(JenskipperError):
             'involved nodes: %s' % ', '.join(str(n) for n in nodes)
         )
         self.nodes = nodes
+
+
+class OverwriteError(JenskipperError):
+
+    pass

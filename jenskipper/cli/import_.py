@@ -9,6 +9,7 @@ from .. import jobs
 from .. import pipelines
 from .. import repository
 from .. import conf
+from .. import exceptions
 
 
 @click.command('import')
@@ -35,13 +36,18 @@ def import_(jenkins_url, dest_dir):
     _write_conf(dest_dir, jenkins_url)
 
 
-def write_jobs_templates(base_dir, jenkins_url, jobs_names):
+def write_jobs_templates(base_dir, jenkins_url, jobs_names,
+                         allow_overwrite=False):
     '''
     Retrieve job templates *jobs_names* from *jenkins_url* server in repository
     at *base_dir*.
 
     Return a ``(pipes_bits, jobs_templates)`` tuple, suitable for
     :func:`write_pipelines` and :func:`write_jobs_defs` respectively.
+
+    If *allow_overwrite* is false, raise a
+    :class:`jenskipper.exceptions.OverwriteError` if attempting to overwrite an
+    existing file.
     '''
     pipes_bits = {}
     jobs_templates = {}
@@ -56,6 +62,8 @@ def write_jobs_templates(base_dir, jenkins_url, jobs_names):
         if pipe_info is not None:
             pipes_bits[job_name] = pipe_info
         tpl_fname = _get_job_template_fname(base_dir, job_name)
+        if not allow_overwrite and op.exists(tpl_fname):
+            raise exceptions.OverwriteError(tpl_fname)
         tpl_dir = op.dirname(tpl_fname)
         if not op.exists(tpl_dir):
             os.makedirs(tpl_dir)
