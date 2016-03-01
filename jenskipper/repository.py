@@ -68,6 +68,12 @@ def _normalize_job_def(job_def, default_context):
 
 
 def get_jobs_defs(base_dir):
+    '''
+    Get the jobs definitons for the repository in *base_dir*.
+
+    Return a dict indexed by job name containing jobs properties (template,
+    context, etc...).
+    '''
     fname = get_jobs_defs_fname(base_dir)
     default_context = get_default_context(base_dir)
     with open(fname) as fp:
