@@ -22,7 +22,8 @@ def import_(jenkins_url, dest_dir):
         click.secho('Destination dir "%s" already exists' % dest_dir, fg='red',
                     bold=True)
         sys.exit(1)
-    jobs_names, jenkins_url = jenkins_api.handle_auth(jenkins_api.list_jobs,
+    jobs_names, jenkins_url = jenkins_api.handle_auth(dest_dir,
+                                                      jenkins_api.list_jobs,
                                                       jenkins_url)
     with click.progressbar(jobs_names, label='Importing jobs') as bar:
         pipes_bits, jobs_templates = _write_jobs_templates(bar, dest_dir,
@@ -38,6 +39,7 @@ def _write_jobs_templates(jobs_names, dest_dir, jenkins_url):
     jobs_templates = {}
     for job_name in jobs_names:
         config, jenkins_url = jenkins_api.handle_auth(
+            dest_dir,
             jenkins_api.get_job_config,
             jenkins_url,
             job_name
@@ -94,4 +96,4 @@ def _format_default_jobs_defs(jobs_templates, base_dir):
 
 def _write_conf(dest_dir, jenkins_url):
     canonical_url, _, _ = jenkins_api.split_auth(jenkins_url)
-    conf.set(['server', 'location'], canonical_url, repos_dir=dest_dir)
+    conf.set_in_repos(dest_dir, ['server', 'location'], canonical_url)
