@@ -76,7 +76,7 @@ def _write_default_context(dest_dir):
 
 def _get_job_template_fname(base_dir, job_name):
     templates_dir = repository.get_templates_dir(base_dir)
-    return op.join(templates_dir, job_name, 'config.xml')
+    return op.join(templates_dir, '%s.xml' % job_name)
 
 
 def _format_default_jobs_defs(jobs_templates, base_dir):
