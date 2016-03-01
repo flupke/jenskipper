@@ -2,6 +2,7 @@ import sys
 
 import click
 
+from . import decorators
 from .. import repository
 from .. import jobs
 from .. import jenkins_api
@@ -10,13 +11,11 @@ from .. import conf
 
 @click.command()
 @click.argument('jobs_names', metavar='JOBS', nargs=-1)
-@click.option('--jk-dir', '-d', default='.', help='Location of the jenskipper '
-              'repository (default: the current directory).')
-def push(jobs_names, jk_dir):
+@decorators.repos_command
+def push(jobs_names, base_dir):
     '''
     Push JOBS to the current repository. Push all jobs if nothing is specified.
     '''
-    base_dir = repository.check_dir_is_in_repository(jk_dir)
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     jobs_defs = repository.get_jobs_defs(base_dir)
     pipelines = repository.get_pipelines(base_dir)
