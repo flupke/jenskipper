@@ -63,14 +63,28 @@ def list_jobs(jenkins_url):
     return [j['name'] for j in data['jobs']]
 
 
+def _get_job_config_url(jenkins_url, name):
+    return urlparse.urljoin(jenkins_url, '/job/%s/config.xml' % name)
+
+
 def get_job_config(jenkins_url, name):
     '''
     Get the XML configuration for job *name* in *jenkins_url*.
     '''
-    url = urlparse.urljoin(jenkins_url, '/job/%s/config.xml' % name)
+    url = _get_job_config_url(jenkins_url, name)
     resp = requests.get(url)
     resp.raise_for_status()
     return resp.text
+
+
+def push_job_config(jenkins_url, name, config):
+    '''
+    Replace the configuration of job *name* at *jenkins_url* with *config* (a
+    XML string).
+    '''
+    url = _get_job_config_url(jenkins_url, name)
+    resp = requests.post(url, config)
+    resp.raise_for_status()
 
 
 def _get_credentials(jenkins_url):
