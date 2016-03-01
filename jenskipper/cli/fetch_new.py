@@ -22,20 +22,19 @@ def fetch_new(base_dir, force):
                                                        jenkins_url)
     new_jobs = set(server_jobs).difference(repos_jobs)
     if new_jobs:
-        with click.progressbar(new_jobs, label='Fetching new jobs') as bar:
-            try:
-                pipes_bits, jobs_templates = import_.write_jobs_templates(
-                    base_dir,
-                    jenkins_url,
-                    bar,
-                    allow_overwrite=force,
-                )
-            except exceptions.OverwriteError as exc:
-                click.secho('')
-                click.secho('File already exists: %s' % exc, fg='red',
-                            bold=True)
-                click.secho('Use --force to overwrite')
-                sys.exit(2)
+        try:
+            with click.progressbar(new_jobs, label='Fetching new jobs') as bar:
+                    pipes_bits, jobs_templates = import_.write_jobs_templates(
+                        base_dir,
+                        jenkins_url,
+                        bar,
+                        allow_overwrite=force,
+                    )
+        except exceptions.OverwriteError as exc:
+            click.secho('File already exists: %s' % exc, fg='red',
+                        bold=True)
+            click.secho('Use --force to overwrite', fg='green')
+            sys.exit(2)
         import_.write_jobs_defs(base_dir, jobs_templates, 'a', pad_lines=1)
         import_.write_pipelines(base_dir, pipes_bits, 'a')
     else:
