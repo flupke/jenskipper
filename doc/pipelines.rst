@@ -4,13 +4,13 @@ Defining jobs pipelines
 Sometimes you want to chain multiple jobs together. For example you might have
 a deploy job that must only be run after integration and unit tests succeeded.
 
-In jenkins, you assemble such pipelines by editing the jobs configurations,
-hooking jobs to each other on by one. This process is cumbersome, and it can be
-hard to visualize the whole pipeline.
+In jenkins, you assemble pipelines by editing the jobs configurations, hooking
+jobs to each other one by one. This process is cumbersome, and it can be hard
+to visualize the whole pipeline.
 
 Jenskipper solves this by separating the pipelines definitions from the jobs.
-Pipelines are defined in the top-level ``pipelines`` text file. Here is the
-representation of the example above::
+Pipelines are defined in the ``pipelines.txt`` file. Here is an example
+chaining 3 jobs together::
 
     unit-tests > integration-tests > deployment
 

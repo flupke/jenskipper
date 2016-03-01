@@ -14,28 +14,29 @@ directory::
 
     jenkins
     |
-    +- pipelines.txt
+    +- jobs.yaml
     |
     +- default_context.yaml
     |
-    +- jobs.yaml
+    +- pipelines.txt
     |
     `- templates
        |
-       +- foo-tests
-       |  |
-       |  `- definition.xml
+       +- foo-tests.xml
        |
-       `- bar-tests
-          |
-          `- definition.xml
+       `- bar-tests.xml
 
 You can now have a look at the XML files in the ``templates`` directory, and
-modify them. Once you're done with your modifications, you can push them to the
-server::
+modify them. Once you're done with your modifications, you can push all of them
+at once to the server::
 
     $ cd jenkins
     $ jenskipper push
+
+You can also push only some jobs by specifying their names on the command
+line::
+
+    $ jenskipper push bar-tests
 
 If you want to pull new jobs from the server::
 
@@ -54,8 +55,8 @@ jobs.yaml
 default_context.yaml
     The variables available to all templates.
 
-templates/
-    The jobs templates directory.
-
 pipelines.txt
     A high-level view of how jobs are chained together; see :doc:`pipelines`.
+
+templates/
+    The jobs templates directory.
