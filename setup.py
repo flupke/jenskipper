@@ -36,6 +36,7 @@ setup(
             'pytest-localserver',
             'pytest-cov',
             'lxml',
+            'sphinx',
         ],
     },
     entry_points={
