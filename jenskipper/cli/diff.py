@@ -19,7 +19,7 @@ from .. import conf
 @decorators.repos_command
 def diff(job_name, base_dir):
     '''
-    Show diff between JOB in the repository and on the server.
+    Show diff between JOB in the local repository and on the server.
     '''
     if not HAVE_LXML:
         click.secho('This command works better if you install lxml:',
