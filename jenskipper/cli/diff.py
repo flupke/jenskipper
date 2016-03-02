@@ -15,8 +15,8 @@ from .. import conf
 
 
 @click.command()
-@click.argument('jobs_names', metavar='JOBS', nargs=-1)
 @decorators.repos_command
+@decorators.jobs_command
 @decorators.handle_conf_errors
 def diff(jobs_names, base_dir):
     '''
@@ -25,10 +25,8 @@ def diff(jobs_names, base_dir):
     if not HAVE_LXML:
         click.secho('This command works better if you install lxml:',
                     fg='yellow', bold=True)
-        click.secho('pip install lxml', fg='green')
+        click.secho('  $ pip install lxml', fg='green')
     jenkins_url = conf.get(base_dir, ['server', 'location'])
-    if not jobs_names:
-        jobs_names = repository.get_jobs_defs(base_dir)
     for job_name in jobs_names:
         _print_job_diff(base_dir, jenkins_url, job_name)
 
