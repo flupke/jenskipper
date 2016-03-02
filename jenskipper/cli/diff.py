@@ -35,7 +35,7 @@ def diff(job_name, base_dir):
     remote_xml = _prepare_xml(remote_xml)
     diff = difflib.unified_diff(remote_xml, local_xml, fromfile='remote',
                                 tofile='local')
-    print ''.join(diff)
+    _print_diff(diff)
 
 
 def _prepare_xml(xml, unescape=False):
@@ -43,3 +43,15 @@ def _prepare_xml(xml, unescape=False):
     xml = utils.unescape_xml(xml)
     xml = xml.replace('\r\n', '\n')
     return xml.splitlines(True)
+
+
+def _print_diff(diff):
+    for line in diff:
+        if line.startswith('---') or line.startswith('+++'):
+            click.secho(line, fg='white', bold=True, nl=False)
+        elif line.startswith('-'):
+            click.secho(line, fg='red', nl=False)
+        elif line.startswith('+'):
+            click.secho(line, fg='green', nl=False)
+        else:
+            click.secho(line, nl=False)
