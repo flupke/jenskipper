@@ -15,17 +15,24 @@ from .. import conf
 
 
 @click.command()
-@click.argument('job_name')
+@click.argument('jobs_names', metavar='JOBS', nargs=-1)
 @decorators.repos_command
-def diff(job_name, base_dir):
+def diff(jobs_names, base_dir):
     '''
-    Show diff between JOB in the local repository and on the server.
+    Show diffs between JOBS in the local repository and on the server.
     '''
     if not HAVE_LXML:
         click.secho('This command works better if you install lxml:',
                     fg='yellow', bold=True)
         click.secho('pip install lxml', fg='green')
     jenkins_url = conf.get(base_dir, ['server', 'location'])
+    if not jobs_names:
+        jobs_names = repository.get_jobs_defs(base_dir)
+    for job_name in jobs_names:
+        _print_job_diff(base_dir, jenkins_url, job_name)
+
+
+def _print_job_diff(base_dir, jenkins_url, job_name):
     local_xml = repository.get_job_conf(base_dir, job_name)
     local_xml = _prepare_xml(local_xml)
     remote_xml, _ = jenkins_api.handle_auth(base_dir,
@@ -33,8 +40,10 @@ def diff(job_name, base_dir):
                                             jenkins_url,
                                             job_name)
     remote_xml = _prepare_xml(remote_xml)
-    diff = difflib.unified_diff(remote_xml, local_xml, fromfile='remote',
-                                tofile='local')
+    diff = difflib.unified_diff(remote_xml,
+                                local_xml,
+                                fromfile='remote/%s.xml' % job_name,
+                                tofile='local/%s.xml' % job_name)
     _print_diff(diff)
 
 
