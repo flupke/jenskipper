@@ -15,3 +15,11 @@ class CyclicDependency(JenskipperError):
 class OverwriteError(JenskipperError):
 
     pass
+
+
+class ConfError(JenskipperError):
+
+    def __init__(self, conf, validation_results):
+        self.conf = conf
+        self.validation_results = validation_results
+        super(ConfError, self).__init__('configuration validation failed')

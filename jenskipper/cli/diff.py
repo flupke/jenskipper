@@ -17,6 +17,7 @@ from .. import conf
 @click.command()
 @click.argument('jobs_names', metavar='JOBS', nargs=-1)
 @decorators.repos_command
+@decorators.handle_conf_errors
 def diff(jobs_names, base_dir):
     '''
     Show diffs between JOBS in the local repository and on the server.
