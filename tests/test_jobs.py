@@ -42,6 +42,13 @@ def test_extract_hash_from_description(data_dir):
     assert_xml_strings_equal(without_hash, conf)
 
 
+def test_extract_hash_from_description_without_hash(data_dir):
+    conf = data_dir.join('job_config.xml').open().read()
+    conf_hash, unchanged_conf = jobs.extract_hash_from_description(conf)
+    assert conf_hash is None
+    assert unchanged_conf == conf
+
+
 JOB_WITHOUT_PIPELINE = '''<?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
