@@ -56,7 +56,7 @@ def _check_push_flag(base_dir, force):
     utils.sechowrap('Pushes are not allowed for this repository', fg='red',
                     bold=True)
     utils.sechowrap('')
-    utils.sechowrap('Someone explicitely disabled the push command for this '
+    utils.sechowrap('The push command is explicitely disabled for this '
                     'repository. This usually means that pushes are done '
                     'server-side with a SCM hook.', fg='red')
     utils.sechowrap('')
