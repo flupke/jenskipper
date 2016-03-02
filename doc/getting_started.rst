@@ -112,7 +112,9 @@ override the context in ``jobs.yaml``, for example:
 Push jobs to the server
 -----------------------
 
-To push your jobs to the server, you can use the ``push command``:
+To push your jobs to the server, you can use the ``push`` command. Note this
+will overwrite **all** the jobs on the servers, so make sure to give a heads up
+to your coworkers!
 
 .. code-block:: shell-session
 
