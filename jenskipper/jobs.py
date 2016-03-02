@@ -1,4 +1,5 @@
 from xml.etree import ElementTree
+import hashlib
 
 import jinja2
 
@@ -86,3 +87,20 @@ def render_job(job_def, pipe_info, templates_dir):
         parents, link_type = pipe_info
         rendered = merge_pipeline_conf(rendered, parents, link_type)
     return rendered
+
+
+def get_conf_hash(conf):
+    '''
+    Get a hash uniquely representing the XML job configuration *conf*.
+    '''
+    hobj = hashlib.sha1()
+    tree = ElementTree.fromstring(conf)
+    for element in tree.iter():
+        hobj.update(element.tag)
+        if element.text is not None:
+            hobj.update(element.text)
+        for key in sorted(element.attrib):
+            value = element.attrib[key]
+            hobj.update(key)
+            hobj.update(value)
+    return hobj.hexdigest()

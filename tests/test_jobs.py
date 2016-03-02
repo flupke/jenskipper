@@ -17,6 +17,12 @@ def test_merge_pipeline_conf(data_dir):
     assert_xml_strings_equal(merged, conf)
 
 
+def test_get_conf_hash(data_dir):
+    conf = data_dir.join('job_config.xml').open().read()
+    assert jobs.get_conf_hash(conf) == \
+        '68f83284e6ac2043047cb5b0ceebd3dfe2ea911d'
+
+
 JOB_WITHOUT_PIPELINE = '''<?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
