@@ -1,5 +1,6 @@
 from xml.etree import ElementTree
 import hashlib
+import re
 
 import jinja2
 
@@ -117,3 +118,26 @@ def append_hash_in_description(conf):
     text += '\r\n\r\n-*- jenskipper-hash: %s -*-' % conf_hash
     description_elt.text = text
     return _format_xml_tree(tree)
+
+
+def extract_hash_from_description(conf):
+    '''
+    Extract jenskiper hash tag from job *conf*'s description.
+
+    Return a ``(hash, pruned_conf)`` tuple, with *hash* the job's hash and
+    *pruned_conf* the configuration XML the hash tag removed from its
+    description.
+    '''
+    tree = ElementTree.fromstring(conf)
+    description_elt = tree.find('.//description')
+    text = description_elt.text
+    if text is not None:
+        match = re.match('\r?\n\r?\n-\*- jenskipper-hash: ([0-9a-f]+) -\*-',
+                         text)
+        if match:
+            conf_hash = match.group(1)
+            text = text.replace(match.group(0), '')
+            description_elt.text = text
+            pruned_conf = _format_xml_tree(tree)
+            return (conf_hash, pruned_conf)
+    return (None, conf)

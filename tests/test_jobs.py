@@ -34,6 +34,14 @@ def test_append_hash_in_description(data_dir):
     assert elt.text.endswith(mark)
 
 
+def test_extract_hash_from_description(data_dir):
+    conf = data_dir.join('job_config.xml').open().read()
+    with_hash = jobs.append_hash_in_description(conf)
+    conf_hash, without_hash = jobs.extract_hash_from_description(with_hash)
+    assert conf_hash == '68f83284e6ac2043047cb5b0ceebd3dfe2ea911d'
+    assert_xml_strings_equal(without_hash, conf)
+
+
 JOB_WITHOUT_PIPELINE = '''<?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
