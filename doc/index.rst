@@ -11,7 +11,7 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    tutorial
+    getting_started
     reference
 
 Indices and tables
