@@ -5,6 +5,7 @@ from .show import show
 from .push import push
 from .list_jobs import list_jobs
 from .fetch_new import fetch_new
+from .diff import diff
 
 
 @click.group()
@@ -19,3 +20,4 @@ main.add_command(show)
 main.add_command(push)
 main.add_command(list_jobs)
 main.add_command(fetch_new)
+main.add_command(diff)

@@ -2,8 +2,6 @@ from xml.etree import ElementTree
 
 import jinja2
 
-from . import repository
-
 
 LINK_ELTS = {
     'SUCCESS': (
@@ -77,8 +75,7 @@ def _create_elt(tag, text=None):
     return elt
 
 
-def render_job(job_def, pipe_info, base_dir):
-    templates_dir = repository.get_templates_dir(base_dir)
+def render_job(job_def, pipe_info, templates_dir):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir))
     template = env.get_template(job_def['template'])
     rendered = template.render(**job_def['context'])

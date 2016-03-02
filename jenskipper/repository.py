@@ -6,6 +6,7 @@ import yaml
 import click
 
 from . import pipelines
+from . import jobs
 
 
 CONF_FNAME = '.jenskipper.conf'
@@ -109,3 +110,12 @@ def get_pipelines(base_dir):
 
 def get_conf_fname(base_dir):
     return op.join(base_dir, CONF_FNAME)
+
+
+def get_job_conf(base_dir, job_name):
+    jobs_defs = get_jobs_defs(base_dir)
+    pipelines = get_pipelines(base_dir)
+    job_def = jobs_defs[job_name]
+    pipe_info = pipelines.get(job_name)
+    templates_dir = get_templates_dir(base_dir)
+    return jobs.render_job(job_def, pipe_info, templates_dir)

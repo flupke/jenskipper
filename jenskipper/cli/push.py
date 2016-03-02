@@ -27,6 +27,7 @@ def push(jobs_names, base_dir):
 
 
 def _push_jobs(base_dir, jenkins_url, pipelines, jobs_names, jobs_defs):
+    templates_dir = repository.get_templates_dir(base_dir)
     ret = 0
     for job_name in jobs_names:
         if job_name not in jobs_defs:
@@ -35,7 +36,7 @@ def _push_jobs(base_dir, jenkins_url, pipelines, jobs_names, jobs_defs):
             continue
         job_def = jobs_defs[job_name]
         pipe_info = pipelines.get(job_name)
-        final_conf = jobs.render_job(job_def, pipe_info, base_dir)
+        final_conf = jobs.render_job(job_def, pipe_info, templates_dir)
         _, jenkins_url = jenkins_api.handle_auth(base_dir,
                                                  jenkins_api.push_job_config,
                                                  jenkins_url,
