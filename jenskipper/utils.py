@@ -1,5 +1,7 @@
 from xml.etree import ElementTree
 
+import click
+
 
 try:
     from lxml import etree
@@ -24,3 +26,8 @@ def format_xml(text):
 def unescape_xml(xml):
     tree = ElementTree.fromstring(xml)
     return ElementTree.tostring(tree, encoding='UTF-8', method='xml')
+
+
+def sechowrap(text, **style):
+    text = click.wrap_text(text)
+    click.secho(text, **style)
