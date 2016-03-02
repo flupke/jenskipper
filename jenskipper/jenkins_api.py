@@ -115,7 +115,7 @@ def split_auth(url):
     '''
     Extract authentification bits from *url*.
 
-    Return a ``(url_without_host, username, password)`` tuple.
+    Return a ``(url_without_auth, username, password)`` tuple.
     '''
     parsed = urlparse.urlparse(url)
     hostport = _get_hostport(parsed)
