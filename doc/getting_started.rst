@@ -3,8 +3,8 @@ Getting Started
 
 In this section we will show you the basics to start working with Jenskipper.
 
-Import your jobs
-----------------
+Installation
+------------
 
 Install jenskipper:
 
@@ -12,11 +12,16 @@ Install jenskipper:
 
     $ pip install jenskipper
 
-Import your jobs:
+
+Import your jobs
+----------------
+
+All commands are accessible via ``jk``, type ``jk --help`` to display the
+integrated help. Start by importing your jobs:
 
 .. code-block:: shell-session
 
-    $ jenskipper import http://my.jenkins.server/ jenkins
+    $ jk import http://my.jenkins.server/ jenkins
 
 This will import all jobs from ``http://my.jenkins.server/`` in the ``jenkins``
 directory::
@@ -119,27 +124,27 @@ to your coworkers!
 .. code-block:: shell-session
 
     $ cd jenkins
-    $ jenskipper push
+    $ jk push
 
 You can also push only some jobs by specifying their names on the command
 line:
 
 .. code-block:: shell-session
 
-    $ jenskipper push bar-tests
+    $ jk push bar-tests
 
 If you want to preview changes before pushing them to the server, use the
 ``diff`` command:
 
 .. code-block:: shell-session
 
-    $ jenskipper diff bar-tests
+    $ jk diff bar-tests
 
 Or to view the full rendered XML of a job:
 
 .. code-block:: shell-session
 
-    $ jenskipper show bar-tests
+    $ jk show bar-tests
 
 Fetching new jobs from the server
 ---------------------------------
@@ -148,7 +153,7 @@ If you want to pull new jobs from the server:
 
 .. code-block:: shell-session
 
-    $ jenskipper fetch-new
+    $ jk fetch-new
 
 Note that you can't update existing jobs from the server. This is wanted,
 jenskipper operations are meant to be one way: after the initial import,

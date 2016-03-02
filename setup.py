@@ -41,6 +41,6 @@ setup(
     },
     entry_points={
         'console_scripts':
-            ['jenskipper=jenskipper.cli.main:main']
+            ['jk=jenskipper.cli.main:main']
     }
 )
