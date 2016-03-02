@@ -25,9 +25,9 @@ def test_get_conf_hash(data_dir):
         '68f83284e6ac2043047cb5b0ceebd3dfe2ea911d'
 
 
-def test_append_hash_in_comments(data_dir):
+def test_append_hash_in_description(data_dir):
     conf = data_dir.join('job_config.xml').open().read()
-    rendered_conf = jobs.append_hash_in_comments(conf)
+    rendered_conf = jobs.append_hash_in_description(conf)
     tree = ElementTree.fromstring(rendered_conf)
     elt = tree.find('.//description')
     mark = '-*- jenskipper-hash: 68f83284e6ac2043047cb5b0ceebd3dfe2ea911d -*-'

@@ -106,7 +106,7 @@ def get_conf_hash(conf):
     return hobj.hexdigest()
 
 
-def append_hash_in_comments(conf):
+def append_hash_in_description(conf):
     '''
     Append the *conf* hash at the end of its description.
     '''
