@@ -76,7 +76,9 @@ def _create_elt(tag, text=None):
 
 
 def render_job(job_def, pipe_info, templates_dir):
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir))
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir),
+                             autoescape=True,
+                             undefined=jinja2.StrictUndefined)
     template = env.get_template(job_def['template'])
     rendered = template.render(**job_def['context'])
     rendered = rendered.encode('utf8')
