@@ -74,7 +74,7 @@ def get_job_config(jenkins_url, name):
     url = _get_job_config_url(jenkins_url, name)
     resp = requests.get(url)
     resp.raise_for_status()
-    return resp.text
+    return resp.text.encode('utf8')
 
 
 def push_job_config(jenkins_url, name, config):

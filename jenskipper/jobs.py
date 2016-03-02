@@ -26,7 +26,7 @@ def extract_pipeline_conf(conf):
     '''
     Remove and parse the pipeline bits in XML job definition *conf*.
     '''
-    tree = ElementTree.fromstring(conf.encode('utf8'))
+    tree = ElementTree.fromstring(conf)
     rbt_elt = tree.find('.//jenkins.triggers.ReverseBuildTrigger')
     if rbt_elt is not None:
         upstream_projects = rbt_elt.findtext('./upstreamProjects')
@@ -53,7 +53,7 @@ def merge_pipeline_conf(conf, parents, link_type):
     *parents* is a list of parent jobs names, and *link_type* the relationship
     to them (one of "SUCCESS", "UNSTABLE" or "FAILURE").
     '''
-    tree = ElementTree.fromstring(conf.encode('utf8'))
+    tree = ElementTree.fromstring(conf)
     trigger = _create_elt('jenkins.triggers.ReverseBuildTrigger')
     trigger.append(_create_elt('spec'))
     upstream_projects = _create_elt('upstreamProjects', ', '.join(parents))
@@ -79,6 +79,7 @@ def render_job(job_def, pipe_info, templates_dir):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir))
     template = env.get_template(job_def['template'])
     rendered = template.render(**job_def['context'])
+    rendered = rendered.encode('utf8')
     if pipe_info is not None:
         parents, link_type = pipe_info
         rendered = merge_pipeline_conf(rendered, parents, link_type)

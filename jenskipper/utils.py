@@ -14,7 +14,7 @@ def format_xml(text):
     '''
     if HAVE_LXML:
         parser = etree.XMLParser(remove_blank_text=True)
-        tree = etree.fromstring(text.encode('utf8'), parser)
+        tree = etree.fromstring(text, parser)
         return etree.tostring(tree, pretty_print=True, xml_declaration=True,
                               encoding='UTF-8')
     else:
@@ -22,5 +22,5 @@ def format_xml(text):
 
 
 def unescape_xml(xml):
-    tree = ElementTree.fromstring(xml.encode('utf8'))
+    tree = ElementTree.fromstring(xml)
     return ElementTree.tostring(tree, encoding='UTF-8', method='xml')
