@@ -1,3 +1,5 @@
+from xml.etree import ElementTree
+
 from jenskipper import jobs
 
 from .asserts import assert_xml_strings_equal
@@ -21,6 +23,15 @@ def test_get_conf_hash(data_dir):
     conf = data_dir.join('job_config.xml').open().read()
     assert jobs.get_conf_hash(conf) == \
         '68f83284e6ac2043047cb5b0ceebd3dfe2ea911d'
+
+
+def test_append_hash_in_comments(data_dir):
+    conf = data_dir.join('job_config.xml').open().read()
+    rendered_conf = jobs.append_hash_in_comments(conf)
+    tree = ElementTree.fromstring(rendered_conf)
+    elt = tree.find('.//description')
+    mark = '-*- jenskipper-hash: 68f83284e6ac2043047cb5b0ceebd3dfe2ea911d -*-'
+    assert elt.text.endswith(mark)
 
 
 JOB_WITHOUT_PIPELINE = '''<?xml version='1.0' encoding='UTF-8'?>

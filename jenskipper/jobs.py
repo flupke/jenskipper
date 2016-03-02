@@ -104,3 +104,16 @@ def get_conf_hash(conf):
             hobj.update(key)
             hobj.update(value)
     return hobj.hexdigest()
+
+
+def append_hash_in_comments(conf):
+    '''
+    Append the *conf* hash at the end of its description.
+    '''
+    conf_hash = get_conf_hash(conf)
+    tree = ElementTree.fromstring(conf)
+    description_elt = tree.find('.//description')
+    text = description_elt.text if description_elt.text is not None else ''
+    text += '\r\n\r\n-*- jenskipper-hash: %s -*-' % conf_hash
+    description_elt.text = text
+    return _format_xml_tree(tree)
