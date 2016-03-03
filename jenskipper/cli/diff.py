@@ -32,7 +32,7 @@ def diff(jobs_names, base_dir):
         print_job_diff(base_dir, jenkins_url, job_name)
 
 
-def print_job_diff(base_dir, jenkins_url, job_name):
+def print_job_diff(base_dir, jenkins_url, job_name, reverse=False):
     local_xml = repository.get_job_conf(base_dir, job_name)
     local_xml = _prepare_xml(local_xml)
     remote_xml, _ = jenkins_api.handle_auth(base_dir,
@@ -40,10 +40,15 @@ def print_job_diff(base_dir, jenkins_url, job_name):
                                             jenkins_url,
                                             job_name)
     remote_xml = _prepare_xml(remote_xml)
-    diff = difflib.unified_diff(remote_xml,
-                                local_xml,
-                                fromfile='remote/%s.xml' % job_name,
-                                tofile='local/%s.xml' % job_name)
+    from_text = remote_xml
+    to_text = local_xml
+    from_file = 'remote/%s.xml' % job_name
+    to_file = 'local/%s.xml' % job_name
+    if reverse:
+        from_text, to_text = to_text, from_text
+        from_file, to_file = to_file, from_file
+    diff = difflib.unified_diff(from_text, to_text, fromfile=from_file,
+                                tofile=to_file)
     _print_diff(diff)
 
 

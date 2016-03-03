@@ -77,7 +77,23 @@ def _create_elt(tag, text=None):
     return elt
 
 
-def render_job(job_def, pipe_info, templates_dir):
+def render_job(job_def, pipe_info, templates_dir, insert_hash=False):
+    '''
+    Render a job XML from job definition *job_def*, templates in
+    *templates_dir* and pipeline infos *pipe_info*.
+
+    If *insert_hash* is true, also include a hash of the configuration as text
+    in the job description.
+
+    :param job_def:
+        the job definition dict, with the same form as values in
+        :func:`jenskipper.repository.get_jobs_defs`
+    :param pipe_info: a ``(parents, link_type)`` tuple
+    :param templates_dir: location of the jobs templates
+    :param insert_hash:
+        a boolean indicating if a hash of the job config should be inserted in
+        the job description
+    '''
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir),
                              autoescape=True,
                              undefined=jinja2.StrictUndefined)
@@ -87,6 +103,8 @@ def render_job(job_def, pipe_info, templates_dir):
     if pipe_info is not None:
         parents, link_type = pipe_info
         rendered = merge_pipeline_conf(rendered, parents, link_type)
+    if insert_hash:
+        rendered = append_hash_in_description(rendered)
     return rendered
 
 
