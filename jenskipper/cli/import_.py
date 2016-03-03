@@ -61,6 +61,7 @@ def write_jobs_templates(base_dir, jenkins_url, jobs_names,
             job_name
         )
         pipe_info, conf = jobs.extract_pipeline_conf(config)
+        _, conf = jobs.extract_hash_from_description(config)
         if pipe_info is not None:
             pipes_bits[job_name] = pipe_info
         tpl_fname = _get_job_template_fname(base_dir, job_name)
