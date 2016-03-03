@@ -2,8 +2,10 @@ import urlparse
 
 import click
 import requests
+import re
 
 from . import conf
+from . import exceptions
 
 
 def handle_auth(base_dir, func, jenkins_url, *args, **kwargs):
@@ -81,10 +83,24 @@ def push_job_config(jenkins_url, name, config):
     '''
     Replace the configuration of job *name* at *jenkins_url* with *config* (a
     XML string).
+
+    Raise a :class:`jenskipper.exceptions.JobTypeMismatch` error if the job
+    type being pushed does not match the server-side job type (e.g. trying to
+    push a multi-configuration job on a freestyle job).
     '''
     url = _get_job_config_url(jenkins_url, name)
     resp = requests.post(url, config)
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except requests.HTTPError as exc:
+        if exc.response.status_code == 500:
+            match = re.search('java.io.IOException: Expecting class '
+                              '([^\d\W][\w.]*) but got class ([^\d\W][\w.]*) '
+                              'instead', exc.response.text)
+            if match is not None:
+                expected_type, pushed_type = match.groups()
+                raise exceptions.JobTypeMismatch(expected_type, pushed_type)
+        raise
 
 
 def _get_credentials(jenkins_url):

@@ -1,4 +1,7 @@
+import pytest
+
 from jenskipper import jenkins_api
+from jenskipper import exceptions
 
 
 def test_list_jobs(data_dir, httpserver):
@@ -17,3 +20,13 @@ def test_split_auth():
         ('http://127.0.0.1:123/', 'foo', None)
     assert jenkins_api.split_auth('http://foo:bar@127.0.0.1:123/') == \
         ('http://127.0.0.1:123/', 'foo', 'bar')
+
+
+def test_push_job_config_type_mismatch(httpserver, data_dir):
+    body = data_dir.join('push_job_conf_type_error.html').open().read()
+    httpserver.serve_content(body, 500)
+    with pytest.raises(exceptions.JobTypeMismatch) as excinfo:
+        jenkins_api.push_job_config(httpserver.url, 'job_name', '')
+    exc = excinfo.value
+    assert exc.pushed_type == 'hudson.matrix.MatrixProject'
+    assert exc.expected_type == 'hudson.model.FreeStyleProject'
