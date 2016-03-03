@@ -21,7 +21,9 @@ from .. import utils
 @decorators.handle_conf_errors
 def push(jobs_names, base_dir, force, allow_overwrite):
     '''
-    Push JOBS to the current repository. Push all jobs if nothing is specified.
+    Push JOBS to the Jenkins server.
+
+    If no JOBS are specified, push all jobs.
     '''
     _check_push_flag(base_dir, force)
     jenkins_url = conf.get(base_dir, ['server', 'location'])

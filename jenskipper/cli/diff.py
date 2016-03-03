@@ -22,6 +22,8 @@ from .. import jobs
 def diff(jobs_names, base_dir):
     '''
     Show diffs between JOBS in the local repository and on the server.
+
+    If no JOBS are specified, diff all jobs.
     '''
     if not HAVE_LXML:
         click.secho('This command works better if you install lxml:',
