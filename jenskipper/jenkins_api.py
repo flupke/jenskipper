@@ -121,3 +121,12 @@ def split_auth(url):
     hostport = _get_hostport(parsed)
     without_auth = parsed._replace(netloc=hostport)
     return urlparse.urlunparse(without_auth), parsed.username, parsed.password
+
+
+def delete_job(jenkins_url, name):
+    '''
+    Delete job named *name* on server at *jenkins_url*.
+    '''
+    url = urlparse.urljoin(jenkins_url, '/job/%s/doDelete')
+    resp = requests.post(url)
+    resp.raise_for_status()
