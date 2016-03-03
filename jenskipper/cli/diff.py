@@ -12,6 +12,7 @@ from .. import utils
 from .. import repository
 from .. import jenkins_api
 from .. import conf
+from .. import jobs
 
 
 @click.command()
@@ -28,10 +29,10 @@ def diff(jobs_names, base_dir):
         click.secho('  $ pip install lxml', fg='green')
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     for job_name in jobs_names:
-        _print_job_diff(base_dir, jenkins_url, job_name)
+        print_job_diff(base_dir, jenkins_url, job_name)
 
 
-def _print_job_diff(base_dir, jenkins_url, job_name):
+def print_job_diff(base_dir, jenkins_url, job_name):
     local_xml = repository.get_job_conf(base_dir, job_name)
     local_xml = _prepare_xml(local_xml)
     remote_xml, _ = jenkins_api.handle_auth(base_dir,
@@ -46,10 +47,11 @@ def _print_job_diff(base_dir, jenkins_url, job_name):
     _print_diff(diff)
 
 
-def _prepare_xml(xml, unescape=False):
+def _prepare_xml(xml):
     xml = utils.format_xml(xml)
     xml = utils.unescape_xml(xml)
     xml = xml.replace('\r\n', '\n')
+    _, xml = jobs.extract_hash_from_description(xml)
     return xml.splitlines(True)
 
 
