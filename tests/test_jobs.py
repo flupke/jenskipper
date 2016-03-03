@@ -49,6 +49,16 @@ def test_extract_hash_from_description_without_hash(data_dir):
     assert unchanged_conf == conf
 
 
+def test_extract_hash_from_text():
+    f = jobs.extract_hash_from_text
+    h = '-*- jenskipper-hash: fff -*-'
+    assert f('foo') == (None, 'foo')
+    assert f(h) == ('fff', '')
+    assert f('foo\n\n%s' % h) == ('fff', 'foo')
+    assert f('foo\r\n\r\n%s' % h) == ('fff', 'foo')
+    assert f('foo%s' % h) == ('fff', 'foo')
+
+
 JOB_WITHOUT_PIPELINE = '''<?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>

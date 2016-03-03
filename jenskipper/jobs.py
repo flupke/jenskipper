@@ -132,12 +132,20 @@ def extract_hash_from_description(conf):
     description_elt = tree.find('.//description')
     text = description_elt.text
     if text is not None:
-        match = re.match('\r?\n\r?\n-\*- jenskipper-hash: ([0-9a-f]+) -\*-',
-                         text)
-        if match:
-            conf_hash = match.group(1)
-            text = text.replace(match.group(0), '')
-            description_elt.text = text
-            pruned_conf = _format_xml_tree(tree)
-            return (conf_hash, pruned_conf)
-    return (None, conf)
+        conf_hash, text = extract_hash_from_text(text)
+        description_elt.text = text
+        conf = _format_xml_tree(tree)
+    else:
+        conf_hash = None
+    return conf_hash, conf
+
+
+def extract_hash_from_text(text):
+    match = re.search('(\r?\n){0,2}-\*- jenskipper-hash: ([0-9a-f]+) -\*-',
+                      text, re.MULTILINE)
+    if match:
+        conf_hash = match.group(2)
+        text = text.replace(match.group(0), '')
+    else:
+        conf_hash = None
+    return conf_hash, text
