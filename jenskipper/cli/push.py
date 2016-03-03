@@ -31,6 +31,7 @@ def push(jobs_names, base_dir, force, allow_overwrite):
                                  allow_overwrite)
     with click.progressbar(jobs_names, label='Pushing jobs') as bar:
         _push_jobs(base_dir, jenkins_url, pipelines, bar, jobs_defs)
+    utils.print_jobs_list('Pushed jobs:', jobs_names, fg='green')
 
 
 def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,

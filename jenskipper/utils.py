@@ -31,3 +31,11 @@ def unescape_xml(xml):
 def sechowrap(text, **style):
     text = click.wrap_text(text)
     click.secho(text, **style)
+
+
+def print_jobs_list(label, jobs_names, pad_lines=1, empty_label=None, **style):
+    if jobs_names:
+        click.secho('\n' * pad_lines, nl=False)
+        click.secho('%s:\n  %s' % (label, '\n  '.join(jobs_names)), **style)
+    elif empty_label:
+        click.secho(empty_label)

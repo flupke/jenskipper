@@ -11,6 +11,7 @@ from .. import pipelines
 from .. import repository
 from .. import conf
 from .. import exceptions
+from .. import utils
 
 
 @click.command('import')
@@ -22,8 +23,8 @@ def import_(jenkins_url, dest_dir):
     Import jobs from JENKINS_URL into DEST_DIR.
     '''
     if op.exists(dest_dir):
-        click.secho('Destination dir "%s" already exists' % dest_dir, fg='red',
-                    bold=True)
+        utils.sechowrap('Destination dir "%s" already exists' % dest_dir,
+                        fg='red', bold=True)
         sys.exit(1)
     jobs_names, jenkins_url = jenkins_api.handle_auth(dest_dir,
                                                       jenkins_api.list_jobs,
@@ -36,6 +37,7 @@ def import_(jenkins_url, dest_dir):
     write_pipelines(dest_dir, pipes_bits, 'w')
     _write_default_context(dest_dir)
     _write_conf(dest_dir, jenkins_url)
+    utils.print_jobs_list('Imported jobs:', jobs_names, fg='green')
 
 
 def write_jobs_templates(base_dir, jenkins_url, jobs_names,

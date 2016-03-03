@@ -1,5 +1,3 @@
-from lxml import etree
-
 from jenskipper import utils
 
 
