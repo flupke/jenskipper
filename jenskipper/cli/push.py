@@ -37,6 +37,7 @@ def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
                                  allow_overwrite):
     if allow_overwrite:
         return
+    gui_was_modified = False
     for job_name in jobs_names:
         conf, jenkins_url = jenkins_api.handle_auth(
             base_dir,
@@ -52,9 +53,11 @@ def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
             utils.sechowrap('')
             diff.print_job_diff(base_dir, jenkins_url, job_name, reverse=True)
             utils.sechowrap('')
-            utils.sechowrap('You can force push the job with the '
-                            '--allow-overwrite flag', fg='red')
-            sys.exit(1)
+            gui_was_modified = True
+    if gui_was_modified:
+        utils.sechowrap('You can force push the jobs with the '
+                        '--allow-overwrite flag', fg='red')
+        sys.exit(1)
 
 
 def _push_jobs(base_dir, jenkins_url, pipelines, jobs_names, jobs_defs):
