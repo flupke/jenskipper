@@ -37,6 +37,6 @@ def sechowrap(text, **style):
 def print_jobs_list(label, jobs_names, pad_lines=1, empty_label=None, **style):
     if jobs_names:
         click.secho('\n' * pad_lines, nl=False)
-        click.secho('%sn  %s' % (label, '\n  '.join(jobs_names)), **style)
+        click.secho('%s\n  %s' % (label, '\n  '.join(jobs_names)), **style)
     elif empty_label:
         click.secho(empty_label)
