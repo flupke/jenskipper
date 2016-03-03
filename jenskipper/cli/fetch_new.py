@@ -28,12 +28,12 @@ def fetch_new(base_dir, force):
     if new_jobs:
         try:
             with click.progressbar(new_jobs, label='Fetching new jobs') as bar:
-                    pipes_bits, jobs_templates = import_.write_jobs_templates(
-                        base_dir,
-                        jenkins_url,
-                        bar,
-                        allow_overwrite=force,
-                    )
+                pipes_bits, jobs_templates = import_.write_jobs_templates(
+                    base_dir,
+                    jenkins_url,
+                    bar,
+                    allow_overwrite=force,
+                )
         except exceptions.OverwriteError as exc:
             click.secho('File already exists: %s' % exc, fg='red',
                         bold=True)
