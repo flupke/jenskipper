@@ -149,6 +149,8 @@ def extract_hash_from_description(conf):
     '''
     tree = ElementTree.fromstring(conf)
     description_elt = tree.find('.//description')
+    if description_elt is None:
+        return None, conf
     text = description_elt.text
     if text is not None:
         conf_hash, text = extract_hash_from_text(text)
