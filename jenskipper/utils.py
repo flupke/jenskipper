@@ -14,6 +14,7 @@ def format_xml(text):
     '''
     Format the XML in *text*.
     '''
+    text = text.strip()
     if HAVE_LXML:
         parser = etree.XMLParser(remove_blank_text=True)
         tree = etree.fromstring(text, parser)
