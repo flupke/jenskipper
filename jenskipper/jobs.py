@@ -100,6 +100,7 @@ def render_job(job_def, pipe_info, templates_dir, insert_hash=False):
     template = env.get_template(job_def['template'])
     rendered = template.render(**job_def['context'])
     rendered = rendered.encode('utf8')
+    rendered = rendered.strip()
     if pipe_info is not None:
         parents, link_type = pipe_info
         rendered = merge_pipeline_conf(rendered, parents, link_type)
