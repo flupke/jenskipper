@@ -80,7 +80,7 @@ def get_job_config(jenkins_url, name):
     return resp.text.encode('utf8')
 
 
-def push_job_config(jenkins_url, name, config):
+def push_job_config(jenkins_url, name, config, allow_create=True):
     '''
     Replace the configuration of job *name* at *jenkins_url* with *config* (a
     XML string).
@@ -88,6 +88,9 @@ def push_job_config(jenkins_url, name, config):
     Raise a :class:`jenskipper.exceptions.JobTypeMismatch` error if the job
     type being pushed does not match the server-side job type (e.g. trying to
     push a multi-configuration job on a freestyle job).
+
+    If *allow_create* is true, attempt to create the job if it does not exist
+    on the server.
     '''
     url = _get_job_config_url(jenkins_url, name)
     resp = requests.post(url, config)
@@ -101,6 +104,8 @@ def push_job_config(jenkins_url, name, config):
             if match is not None:
                 expected_type, pushed_type = match.groups()
                 raise exceptions.JobTypeMismatch(expected_type, pushed_type)
+        elif exc.response.status_code == 404 and allow_create:
+            return create_job(jenkins_url, name, config)
         raise
 
 
