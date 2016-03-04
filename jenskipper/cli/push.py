@@ -9,6 +9,7 @@ from .. import jobs
 from .. import jenkins_api
 from .. import conf
 from .. import utils
+from .. import exceptions
 
 
 @click.command()
@@ -31,9 +32,27 @@ def push(jobs_names, base_dir, force, allow_overwrite):
     pipelines = repository.get_pipelines(base_dir)
     _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
                                  allow_overwrite)
-    with click.progressbar(jobs_names, label='Pushing jobs') as bar:
-        _push_jobs(base_dir, jenkins_url, pipelines, bar, jobs_defs)
-    utils.print_jobs_list('Pushed jobs:', jobs_names, fg='green')
+    remaining_jobs = list(jobs_names)
+    while remaining_jobs:
+        with click.progressbar(remaining_jobs, label='Pushing jobs') as bar:
+            mismatch_info, remaining_jobs = _push_jobs(remaining_jobs, bar,
+                                                       base_dir, jenkins_url,
+                                                       pipelines, jobs_defs)
+        if mismatch_info:
+            job_name, expected_type, pushed_type = mismatch_info
+            if _confirm_mismatching_job_type_overwrite(job_name, expected_type,
+                                                       pushed_type):
+                _, jenkins_url = jenkins_api.handle_auth(
+                    base_dir,
+                    jenkins_api.delete_job,
+                    jenkins_url,
+                    job_name
+                )
+            else:
+                break
+    pushed_jobs = sorted(set(jobs_names).difference(remaining_jobs))
+    utils.print_jobs_list('Jobs not pushed:', remaining_jobs, fg='yellow')
+    utils.print_jobs_list('Pushed jobs:', pushed_jobs, fg='green')
 
 
 def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
@@ -58,23 +77,51 @@ def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
             utils.sechowrap('')
             gui_was_modified = True
     if gui_was_modified:
+        utils.sechowrap('')
         utils.sechowrap('You can force push the jobs with the '
                         '--allow-overwrite flag', fg='red')
         sys.exit(1)
 
 
-def _push_jobs(base_dir, jenkins_url, pipelines, jobs_names, jobs_defs):
+def _push_jobs(jobs_names, progress_bar, base_dir, jenkins_url, pipelines,
+               jobs_defs):
     templates_dir = repository.get_templates_dir(base_dir)
-    for job_name in jobs_names:
+    remaining_jobs = list(jobs_names)
+    mismatch_info = None
+    for job_name in progress_bar:
         job_def = jobs_defs[job_name]
         pipe_info = pipelines.get(job_name)
         final_conf = jobs.render_job(job_def, pipe_info, templates_dir,
                                      insert_hash=True)
-        _, jenkins_url = jenkins_api.handle_auth(base_dir,
-                                                 jenkins_api.push_job_config,
-                                                 jenkins_url,
-                                                 job_name,
-                                                 final_conf)
+        try:
+            _, jenkins_url = jenkins_api.handle_auth(
+                base_dir,
+                jenkins_api.push_job_config,
+                jenkins_url,
+                job_name,
+                final_conf
+            )
+        except exceptions.JobTypeMismatch as exc:
+            mismatch_info = (job_name, exc.expected_type, exc.pushed_type)
+            break
+        remaining_jobs.pop(0)
+    return mismatch_info, remaining_jobs
+
+
+def _confirm_mismatching_job_type_overwrite(job_name, expected_type,
+                                            pushed_type):
+    utils.sechowrap('')
+    utils.sechowrap('Failed to push %s.' % job_name, fg='red', bold=True)
+    utils.sechowrap('')
+    utils.sechowrap('The job type on the server does not match the job type '
+                    'being pushed:', fg='red')
+    utils.sechowrap('  expected: %s' % expected_type, fg='red')
+    utils.sechowrap('  pushed: %s' % pushed_type, fg='red')
+    utils.sechowrap('')
+    return click.confirm(click.style(click.wrap_text(
+        'Do you want to delete the old job and replace it with this one? '
+        'you will loose all the builds history'
+    ), fg='yellow'))
 
 
 def _check_push_flag(base_dir, force):
