@@ -146,3 +146,13 @@ def delete_job(jenkins_url, name):
     url = urlparse.urljoin(jenkins_url, '/job/%s/doDelete')
     resp = requests.post(url)
     resp.raise_for_status()
+
+
+def rename_job(jenkins_url, name, new_name):
+    '''
+    Rename job *name* to *new_name* on server at *jenkins_url*.
+    '''
+    url = urlparse.urljoin(jenkins_url,
+                           '/job/%s/doRename?newName=%s' % (name, new_name))
+    resp = requests.post(url)
+    resp.raise_for_status()
