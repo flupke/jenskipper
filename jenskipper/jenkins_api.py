@@ -1,4 +1,5 @@
 import urlparse
+import urllib
 
 import click
 import requests
@@ -155,4 +156,15 @@ def rename_job(jenkins_url, name, new_name):
     url = urlparse.urljoin(jenkins_url,
                            '/job/%s/doRename?newName=%s' % (name, new_name))
     resp = requests.post(url)
+    resp.raise_for_status()
+
+
+def create_job(jenkins_url, name, conf):
+    '''
+    Create a new job named *name* with *conf* on server at *jenkins_url*.
+    '''
+    url = urlparse.urljoin(jenkins_url, '/createItem?name=%s' %
+                           urllib.quote_plus(name))
+    resp = requests.post(url, conf,
+                         headers={'Content-Type': 'application/xml'})
     resp.raise_for_status()
