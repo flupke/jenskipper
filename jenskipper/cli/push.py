@@ -61,12 +61,15 @@ def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
         return
     gui_was_modified = False
     for job_name in jobs_names:
-        conf, jenkins_url = jenkins_api.handle_auth(
-            base_dir,
-            jenkins_api.get_job_config,
-            jenkins_url,
-            job_name
-        )
+        try:
+            conf, jenkins_url = jenkins_api.handle_auth(
+                base_dir,
+                jenkins_api.get_job_config,
+                jenkins_url,
+                job_name
+            )
+        except exceptions.JobNotFound:
+            continue
         saved_hash, conf = jobs.extract_hash_from_description(conf)
         actual_hash = jobs.get_conf_hash(conf)
         if saved_hash is not None and saved_hash != actual_hash:

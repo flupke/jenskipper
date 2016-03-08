@@ -38,3 +38,8 @@ class JobTypeMismatch(JenskipperError):
         super(JobTypeMismatch, self).__init__('job type mismatch: expected '
                                               '"%s" but got "%s" instead' %
                                               (pushed_type, expected_type))
+
+
+class JobNotFound(JenskipperError):
+
+    pass

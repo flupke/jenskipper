@@ -76,7 +76,12 @@ def get_job_config(jenkins_url, name):
     '''
     url = _get_job_config_url(jenkins_url, name)
     resp = requests.get(url)
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except requests.HTTPError as exc:
+        if exc.response.status_code == 404:
+            raise exceptions.JobNotFound(name)
+        raise
     return resp.text.encode('utf8')
 
 
