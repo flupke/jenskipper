@@ -29,8 +29,8 @@ def unescape_xml(xml):
     return ElementTree.tostring(tree, encoding='UTF-8', method='xml')
 
 
-def sechowrap(text, **style):
-    text = click.wrap_text(text)
+def sechowrap(text, wrap_opts={}, **style):
+    text = click.wrap_text(text, **wrap_opts)
     click.secho(text, **style)
 
 
