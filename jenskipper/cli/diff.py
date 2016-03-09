@@ -1,4 +1,5 @@
 import difflib
+import sys
 
 try:
     from lxml import etree  # NOQA
@@ -13,6 +14,7 @@ from .. import repository
 from .. import jenkins_api
 from .. import conf
 from .. import jobs
+from .. import exceptions
 
 
 @click.command()
@@ -31,7 +33,14 @@ def diff(jobs_names, base_dir):
         click.secho('  $ pip install lxml', fg='green')
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     for job_name in jobs_names:
-        print_job_diff(base_dir, jenkins_url, job_name)
+        try:
+            print_job_diff(base_dir, jenkins_url, job_name)
+        except exceptions.JobNotFound:
+            utils.sechowrap('')
+            utils.sechowrap('Unknown job: %s' % job_name, fg='red', bold=True)
+            utils.sechowrap('Job is present in the local repository, but not '
+                            'on the Jenkins server.', fg='red')
+            sys.exit(1)
 
 
 def print_job_diff(base_dir, jenkins_url, job_name, reverse=False):
