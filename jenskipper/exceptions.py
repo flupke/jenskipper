@@ -43,3 +43,8 @@ class JobTypeMismatch(JenskipperError):
 class JobNotFound(JenskipperError):
 
     pass
+
+
+class BuildNotQueued(JenskipperError):
+
+    pass

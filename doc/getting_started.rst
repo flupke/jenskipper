@@ -146,6 +146,12 @@ Or to view the full rendered XML of a job:
 
     $ jk show bar-tests
 
+You can also trigger a build from the command line:
+
+.. code-block:: shell-session
+
+    $ jk build bar-tests
+
 Fetching new jobs from the server
 ---------------------------------
 

@@ -178,3 +178,17 @@ def create_job(jenkins_url, name, conf):
     resp = requests.post(url, conf,
                          headers={'Content-Type': 'application/xml'})
     resp.raise_for_status()
+
+
+def build_job(jenkins_url, job_name):
+    '''
+    Trigger a build for *job_name*.
+
+    Return the URL of the item in the builds queue.
+    '''
+    url = urlparse.urljoin(jenkins_url, '/job/%s/build' % job_name)
+    resp = requests.post(url)
+    resp.raise_for_status()
+    if resp.status_code != 201:
+        raise exceptions.BuildNotQueued(job_name)
+    return resp.headers['location']
