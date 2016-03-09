@@ -116,13 +116,13 @@ def get_conf_hash(conf):
     hobj = hashlib.sha1()
     tree = ElementTree.fromstring(conf)
     for element in tree.iter():
-        hobj.update(element.tag)
+        hobj.update(element.tag.encode('utf8'))
         if element.text is not None:
-            hobj.update(element.text)
+            hobj.update(element.text.encode('utf8'))
         for key in sorted(element.attrib):
             value = element.attrib[key]
-            hobj.update(key)
-            hobj.update(value)
+            hobj.update(key.encode('utf8'))
+            hobj.update(value.encode('utf8'))
     return hobj.hexdigest()
 
 

@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 from xml.etree import ElementTree
 
 from jenskipper import jobs
@@ -22,7 +24,7 @@ def test_merge_pipeline_conf(data_dir):
 def test_get_conf_hash(data_dir):
     conf = data_dir.join('job_config.xml').open().read()
     assert jobs.get_conf_hash(conf) == \
-        '68f83284e6ac2043047cb5b0ceebd3dfe2ea911d'
+        '755f757faa53968a68a7b13851ce8052c7dfee97'
 
 
 def test_append_hash_in_description(data_dir):
@@ -30,7 +32,7 @@ def test_append_hash_in_description(data_dir):
     rendered_conf = jobs.append_hash_in_description(conf)
     tree = ElementTree.fromstring(rendered_conf)
     elt = tree.find('.//description')
-    mark = '-*- jenskipper-hash: 68f83284e6ac2043047cb5b0ceebd3dfe2ea911d -*-'
+    mark = '-*- jenskipper-hash: 755f757faa53968a68a7b13851ce8052c7dfee97 -*-'
     assert elt.text.endswith(mark)
 
 
@@ -38,7 +40,7 @@ def test_extract_hash_from_description(data_dir):
     conf = data_dir.join('job_config.xml').open().read()
     with_hash = jobs.append_hash_in_description(conf)
     conf_hash, without_hash = jobs.extract_hash_from_description(with_hash)
-    assert conf_hash == '68f83284e6ac2043047cb5b0ceebd3dfe2ea911d'
+    assert conf_hash == '755f757faa53968a68a7b13851ce8052c7dfee97'
     assert_xml_strings_equal(without_hash, conf)
 
 
@@ -46,7 +48,7 @@ def test_extract_hash_from_description_without_hash(data_dir):
     conf = data_dir.join('job_config.xml').open().read()
     conf_hash, unchanged_conf = jobs.extract_hash_from_description(conf)
     assert conf_hash is None
-    assert unchanged_conf == conf
+    assert_xml_strings_equal(unchanged_conf, conf)
 
 
 def test_extract_hash_from_text():
@@ -62,7 +64,7 @@ def test_extract_hash_from_text():
 JOB_WITHOUT_PIPELINE = '''<?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description/>
+  <description>€</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.plugins.slack.SlackNotifier_-SlackJobProperty plugin="slack@1.8">
