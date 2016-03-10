@@ -83,7 +83,8 @@ def context_command(func):
         try:
             context_overrides = parse_context_vars(context_vars)
         except exceptions.MalformedContextVar as exc:
-            click.secho('Malformed context var: %s' % exc, fg='red', bold=True)
+            click.secho('Malformed context var in command-line: %s' % exc,
+                        fg='red', bold=True)
             sys.exit(1)
         return func(context_overrides=context_overrides, **kwargs)
 
