@@ -8,6 +8,7 @@ from .fetch_new import fetch_new
 from .diff import diff
 from .build import build
 from .prune import prune
+from .test import test
 
 
 @click.group()
@@ -25,3 +26,4 @@ main.add_command(fetch_new)
 main.add_command(diff)
 main.add_command(build)
 main.add_command(prune)
+main.add_command(test)

@@ -29,6 +29,15 @@ def build(jobs_names, base_dir, block):
     Trigger builds for JOBS.
     '''
     jenkins_url = conf.get(base_dir, ['server', 'location'])
+    queue_urls, jenkins_url = trigger_builds(jobs_names, base_dir, jenkins_url)
+    if block:
+        results = wait_for_jobs(queue_urls, jenkins_url)
+        for job_name, (_, result) in results.items():
+            print_job_result(job_name, result)
+        sys.exit(any(r != 'SUCCESS' for r in results.values()))
+
+
+def trigger_builds(jobs_names, base_dir, jenkins_url):
     queue_urls = {}
     for name in jobs_names:
         queue_url, jenkins_url = jenkins_api.handle_auth(
@@ -38,11 +47,18 @@ def build(jobs_names, base_dir, block):
             name
         )
         queue_urls[name] = queue_url
-    if block:
-        _, username, password = utils.split_auth_in_url(jenkins_url)
-        jobs_urls = _get_jobs_urls(queue_urls, username, password)
-        if _wait_for_jobs(jobs_urls):
-            sys.exit(1)
+    return queue_urls, jenkins_url
+
+
+def wait_for_jobs(queue_urls, jenkins_url):
+    _, username, password = utils.split_auth_in_url(jenkins_url)
+    jobs_urls = _get_jobs_urls(queue_urls, username, password)
+    return _poll_jobs(jobs_urls, username, password)
+
+
+def print_job_result(job_name, result, suffix=''):
+    color = RESULT_COLORS[result]
+    click.secho('%s: %s%s' % (job_name, result.lower(), suffix), fg=color)
 
 
 def _get_jobs_urls(queue_urls, username, password):
@@ -57,11 +73,7 @@ def _get_jobs_urls(queue_urls, username, password):
             if resp.status_code == 200:
                 resp_dict = resp.json()
                 if 'executable' in resp_dict:
-                    job_url = resp_dict['executable']['url']
-                    job_url = urlparse.urljoin(job_url, 'api/json')
-                    job_url = utils.replace_auth_in_url(job_url, username,
-                                                        password)
-                    ret[job_name] = job_url
+                    ret[job_name] = resp_dict['executable']['url']
                     del queue_urls[job_name]
             elif resp.status_code == 404:
                 # A 404 means that the queue info is not available anymore. We
@@ -75,20 +87,19 @@ def _get_jobs_urls(queue_urls, username, password):
     return ret
 
 
-def _wait_for_jobs(jobs_urls):
+def _poll_jobs(jobs_urls, username, password):
+    ret = {}
     jobs_urls = jobs_urls.copy()
-    error = False
     while jobs_urls:
-        for job_name, job_url in jobs_urls.items():
+        for job_name, job_url_base in jobs_urls.items():
+            job_url = urlparse.urljoin(job_url_base, 'api/json')
+            job_url = utils.replace_auth_in_url(job_url, username, password)
             resp = requests.get(job_url)
             resp.raise_for_status()
             resp_dict = resp.json()
             result = resp_dict['result']
             if result is not None:
-                if result != 'SUCCESS':
-                    error = True
-                utils.sechowrap('%s: %s' % (job_name, result.lower()),
-                                fg=RESULT_COLORS[result])
+                ret[job_name] = (job_url_base, result)
                 del jobs_urls[job_name]
         time.sleep(1)
-    return error
+    return ret
