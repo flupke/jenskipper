@@ -52,18 +52,20 @@ def get_jobs_defs_fname(base_dir):
     return op.join(base_dir, 'jobs.yaml')
 
 
-def parse_jobs_defs(fp, default_context):
+def parse_jobs_defs(fp, default_contexts):
     jobs_defs = yaml.safe_load(fp)
-    return {k: _normalize_job_def(v, default_context)
+    return {k: _normalize_job_def(v, default_contexts)
             for k, v in jobs_defs.items()}
 
 
-def _normalize_job_def(job_def, default_context):
+def _normalize_job_def(job_def, default_contexts):
     job_def_context = job_def.get('context', {})
-    context = default_context.copy()
+    default_context_name = job_def.get('default_context', 'default')
+    context = default_contexts.get(default_context_name, {}).copy()
     context.update(job_def_context)
     return {
         'template': job_def['template'],
+        'default_context': default_context_name,
         'context': context,
     }
 
@@ -76,26 +78,26 @@ def get_jobs_defs(base_dir):
     context, etc...).
     '''
     fname = get_jobs_defs_fname(base_dir)
-    default_context = get_default_context(base_dir)
+    default_contexts = get_default_contexts(base_dir)
     with open(fname) as fp:
-        return parse_jobs_defs(fp, default_context)
+        return parse_jobs_defs(fp, default_contexts)
 
 
-def get_default_context_fname(base_dir):
-    return op.join(base_dir, 'default_context.yaml')
+def get_default_contexts_fname(base_dir):
+    return op.join(base_dir, 'contexts.yaml')
 
 
-def parse_default_context(fp):
-    context = yaml.safe_load(fp)
-    if context is None:
-        context = {}
-    return context
+def parse_default_contexts(fp):
+    contexts = yaml.safe_load(fp)
+    if contexts is None:
+        contexts = {}
+    return contexts
 
 
-def get_default_context(base_dir):
-    fname = get_default_context_fname(base_dir)
+def get_default_contexts(base_dir):
+    fname = get_default_contexts_fname(base_dir)
     with open(fname) as fp:
-        return parse_default_context(fp)
+        return parse_default_contexts(fp)
 
 
 def get_pipelines_fname(base_dir):

@@ -36,7 +36,8 @@ def _confirm_and_delete(base_dir, unknown_jobs, confirm, jenkins_url):
         utils.sechowrap('')
         delete = click.confirm(click.style(click.wrap_text(
             'Do you really want to delete these jobs? THIS CANNOT BE '
-            'RECOVERED!'), fg='red', bold=True))
+            'RECOVERED!'
+        ), fg='red', bold=True))
     else:
         delete = True
     if delete:

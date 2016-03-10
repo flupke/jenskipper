@@ -10,6 +10,10 @@ template
     Required, the name of the template to render in the ``templates/``
     directory.
 
+default_context:
+    Name of a context in ``context.yaml`` to pass to the template. If
+    unspecified, defaults to ``default``.
+
 context
-    Optional, a mapping containing extra context for the template. It overrides
-    values in ``default_context.yaml``.
+    Optional, a mapping containing extra context overriding
+    ``default_context``.

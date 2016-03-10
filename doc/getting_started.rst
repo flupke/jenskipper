@@ -30,7 +30,7 @@ directory::
     |
     +- jobs.yaml
     |
-    +- default_context.yaml
+    +- contexts.yaml
     |
     +- pipelines.txt
     |
@@ -48,7 +48,7 @@ Let's have a look at the files in the repository:
 * ``jobs.yaml`` - the list of jobs that are managed by jenskipper; see
   :doc:`jobs`;
 
-* ``default_context.yaml`` - the variables available to all templates;
+* ``contexts.yaml`` - contexts for use in templates;
 
 * ``pipelines.txt`` - a high-level view of how jobs are chained together; see
   :doc:`pipelines`;
@@ -72,11 +72,13 @@ repository, that should look like this:
       template: bar-tests.xml
 
 Say you want to define a global email address where failure notifications must
-be sent. Open the ``default_context.yaml`` and define a new variable in it:
+be sent. Open the ``contexts.yaml`` and define a new variable for the default
+context:
 
 .. code-block:: yaml
 
-    default_email: popov@company.com
+    default:
+      default_email: popov@company.com
 
 This variable is then available in all templates through the `Jinja
 <http://jinja.pocoo.org/>`_ templating language. Open

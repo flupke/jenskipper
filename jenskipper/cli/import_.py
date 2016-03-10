@@ -35,7 +35,7 @@ def import_(jenkins_url, dest_dir):
                                                           bar)
     write_jobs_defs(dest_dir, jobs_templates, 'w')
     write_pipelines(dest_dir, pipes_bits, 'w')
-    _write_default_context(dest_dir)
+    _write_default_contexts(dest_dir)
     _write_conf(dest_dir, jenkins_url)
     utils.print_jobs_list('Imported jobs:', jobs_names, fg='green')
 
@@ -101,7 +101,7 @@ def write_pipelines(base_dir, pipes_bits, mode):
         fp.write(text)
 
 
-def _write_default_context(base_dir):
+def _write_default_contexts(base_dir):
     fname = repository.get_default_context_fname(base_dir)
     open(fname, 'w').close()
 
