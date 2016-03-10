@@ -7,6 +7,7 @@ import re
 
 from . import conf
 from . import exceptions
+from . import utils
 
 
 def handle_auth(base_dir, func, jenkins_url, *args, **kwargs):
@@ -19,16 +20,16 @@ def handle_auth(base_dir, func, jenkins_url, *args, **kwargs):
     correct auth bits in it.
     '''
     # Search auth in conf, unless it's contained in the URL
-    canonical_url, username, password = split_auth(jenkins_url)
+    canonical_url, username, password = utils.split_auth_in_url(jenkins_url)
     if username is None and password is None:
         try:
             server_conf = conf.get(base_dir, [canonical_url])
         except KeyError:
             pass
         else:
-            jenkins_url = _replace_auth(jenkins_url,
-                                        server_conf['username'],
-                                        server_conf['password'])
+            jenkins_url = utils.replace_auth_in_url(jenkins_url,
+                                                    server_conf['username'],
+                                                    server_conf['password'])
 
     # Try to execute decorated function, looping on auth errors
     user_gave_auth = False
@@ -48,7 +49,8 @@ def handle_auth(base_dir, func, jenkins_url, *args, **kwargs):
         user_conf_fname = conf.get_user_conf_fname()
         if click.confirm('Save credentials in the global conf "%s"?' %
                          user_conf_fname):
-            canonical_url, username, password = split_auth(jenkins_url)
+            canonical_url, username, password = \
+                    utils.split_auth_in_url(jenkins_url)
             conf.set_in_user([canonical_url, 'username'], username)
             conf.set_in_user([canonical_url, 'password'], password)
 
@@ -120,34 +122,7 @@ def _get_credentials(jenkins_url):
     username = click.prompt('Username')
     password = click.prompt('Password', hide_input=True)
     click.secho('')
-    return _replace_auth(jenkins_url, username, password)
-
-
-def _replace_auth(url, username, password):
-    parsed = urlparse.urlparse(url)
-    hostport = _get_hostport(parsed)
-    netloc = '%s:%s@%s' % (username, password, hostport)
-    replaced = parsed._replace(netloc=netloc)
-    return urlparse.urlunparse(replaced)
-
-
-def _get_hostport(parsed_url):
-    hostport = parsed_url.hostname
-    if parsed_url.port is not None:
-        hostport += ':%s' % parsed_url.port
-    return hostport
-
-
-def split_auth(url):
-    '''
-    Extract authentification bits from *url*.
-
-    Return a ``(url_without_auth, username, password)`` tuple.
-    '''
-    parsed = urlparse.urlparse(url)
-    hostport = _get_hostport(parsed)
-    without_auth = parsed._replace(netloc=hostport)
-    return urlparse.urlunparse(without_auth), parsed.username, parsed.password
+    return utils.replace_auth_in_url(jenkins_url, username, password)
 
 
 def delete_job(jenkins_url, name):

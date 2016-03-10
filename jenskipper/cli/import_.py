@@ -125,5 +125,5 @@ def _format_default_jobs_defs(jobs_templates, base_dir):
 
 
 def _write_conf(base_dir, jenkins_url):
-    canonical_url, _, _ = jenkins_api.split_auth(jenkins_url)
+    canonical_url, _, _ = utils.split_auth_in_url(jenkins_url)
     conf.set_in_repos(base_dir, ['server', 'location'], canonical_url)
