@@ -7,6 +7,7 @@ import click
 
 from . import repository
 from . import exceptions
+from . import utils
 
 
 THIS_DIR = op.dirname(__file__)
@@ -81,24 +82,13 @@ def get(base_dir, path):
     return obj
 
 
-def _set(conf, path, value):
-    obj = conf
-    keys = list(path)
-    while keys:
-        key = keys.pop(0)
-        if not keys:
-            obj[key] = value
-        else:
-            obj = obj.setdefault(key, {})
-    conf.write()
-
-
 def set_in_user(path, value):
     '''
     Write *value* in setting at *path*, in the global user configuration.
     '''
     conf = get_user_conf()
-    _set(conf, path, value)
+    utils.set_path_in_dict(conf, path, value, inplace=True)
+    conf.write()
 
 
 def set_in_repos(base_dir, path, value):
@@ -107,4 +97,5 @@ def set_in_repos(base_dir, path, value):
     *base_dir*.
     '''
     conf = get_repository_conf(base_dir)
-    _set(conf, path, value)
+    utils.set_path_in_dict(conf, path, value, inplace=True)
+    conf.write()
