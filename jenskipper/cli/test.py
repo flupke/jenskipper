@@ -12,8 +12,9 @@ from .. import repository
 @click.command()
 @decorators.repos_command
 @decorators.jobs_command
+@decorators.context_command
 @decorators.handle_conf_errors
-def test(jobs_names, base_dir):
+def test(jobs_names, base_dir, context_overrides):
     '''
     Create temporary copies of JOBS and execute them.
 
@@ -21,19 +22,22 @@ def test(jobs_names, base_dir):
     deleted, and failures are kept for inspection.
     '''
     jenkins_url = conf.get(base_dir, ['server', 'location'])
-    new_jobs_names, jenkins_url = _create_temp_jobs(jobs_names, base_dir,
-                                                    jenkins_url)
+    new_jobs_names, jenkins_url = _create_temp_jobs(jobs_names,
+                                                    base_dir,
+                                                    jenkins_url,
+                                                    context_overrides)
     queue_urls, jenkins_url = build.trigger_builds(new_jobs_names, base_dir,
                                                    jenkins_url)
     results = build.wait_for_jobs(queue_urls, jenkins_url)
     _process_results(results, jenkins_url)
 
 
-def _create_temp_jobs(jobs_names, base_dir, jenkins_url):
+def _create_temp_jobs(jobs_names, base_dir, jenkins_url, context_overrides):
     ret = []
     for job_name in jobs_names:
         temp_name = '%s.%s' % (job_name, uuid.uuid4().hex[:8])
-        conf = repository.get_job_conf(base_dir, job_name)
+        conf = repository.get_job_conf(base_dir, job_name,
+                                       context_overrides=context_overrides)
         _, jenkins_url = jenkins_api.handle_auth(base_dir,
                                                  jenkins_api.push_job_config,
                                                  jenkins_url,

@@ -19,8 +19,9 @@ from .. import exceptions
               help='Allow overwriting changes made in the GUI.')
 @decorators.repos_command
 @decorators.jobs_command
+@decorators.context_command
 @decorators.handle_conf_errors
-def push(jobs_names, base_dir, force, allow_overwrite):
+def push(jobs_names, base_dir, force, allow_overwrite, context_overrides):
     '''
     Push JOBS to the Jenkins server.
 
@@ -31,13 +32,14 @@ def push(jobs_names, base_dir, force, allow_overwrite):
     jobs_defs = repository.get_jobs_defs(base_dir)
     pipelines = repository.get_pipelines(base_dir)
     _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
-                                 allow_overwrite)
+                                 allow_overwrite, context_overrides)
     remaining_jobs = list(jobs_names)
     while remaining_jobs:
         with click.progressbar(remaining_jobs, label='Pushing jobs') as bar:
             mismatch_info, remaining_jobs = _push_jobs(remaining_jobs, bar,
                                                        base_dir, jenkins_url,
-                                                       pipelines, jobs_defs)
+                                                       pipelines, jobs_defs,
+                                                       context_overrides)
         if mismatch_info:
             job_name, expected_type, pushed_type = mismatch_info
             if _confirm_mismatching_job_type_overwrite(job_name, expected_type,
@@ -56,7 +58,7 @@ def push(jobs_names, base_dir, force, allow_overwrite):
 
 
 def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
-                                 allow_overwrite):
+                                 allow_overwrite, context_overrides):
     if allow_overwrite:
         return
     gui_was_modified = False
@@ -76,7 +78,8 @@ def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
             utils.sechowrap('It looks like job "%s" has been modified in the '
                             'Jenkins GUI:' % job_name, fg='red', bold=True)
             utils.sechowrap('')
-            diff.print_job_diff(base_dir, jenkins_url, job_name, reverse=True)
+            diff.print_job_diff(base_dir, jenkins_url, job_name,
+                                context_overrides, reverse=True)
             utils.sechowrap('')
             gui_was_modified = True
     if gui_was_modified:
@@ -87,7 +90,7 @@ def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
 
 
 def _push_jobs(jobs_names, progress_bar, base_dir, jenkins_url, pipelines,
-               jobs_defs):
+               jobs_defs, context_overrides):
     templates_dir = repository.get_templates_dir(base_dir)
     remaining_jobs = list(jobs_names)
     mismatch_info = None
@@ -95,7 +98,8 @@ def _push_jobs(jobs_names, progress_bar, base_dir, jenkins_url, pipelines,
         job_def = jobs_defs[job_name]
         pipe_info = pipelines.get(job_name)
         final_conf = jobs.render_job(job_def, pipe_info, templates_dir,
-                                     insert_hash=True)
+                                     insert_hash=True,
+                                     context_overrides=context_overrides)
         try:
             _, jenkins_url = jenkins_api.handle_auth(
                 base_dir,

@@ -48,3 +48,8 @@ class JobNotFound(JenskipperError):
 class BuildNotQueued(JenskipperError):
 
     pass
+
+
+class MalformedContextVar(JenskipperError):
+
+    pass

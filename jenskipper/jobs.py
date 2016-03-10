@@ -4,6 +4,8 @@ import re
 
 import jinja2
 
+from . import utils
+
 
 LINK_ELTS = {
     'SUCCESS': (
@@ -77,7 +79,8 @@ def _create_elt(tag, text=None):
     return elt
 
 
-def render_job(job_def, pipe_info, templates_dir, insert_hash=False):
+def render_job(job_def, pipe_info, templates_dir, insert_hash=False,
+               context_overrides={}):
     '''
     Render a job XML from job definition *job_def*, templates in
     *templates_dir* and pipeline infos *pipe_info*.
@@ -93,12 +96,15 @@ def render_job(job_def, pipe_info, templates_dir, insert_hash=False):
     :param insert_hash:
         a boolean indicating if a hash of the job config should be inserted in
         the job description
+    :param context_overrides:
+        a mapping that will be deep merged in the final context
     '''
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir),
                              autoescape=True,
                              undefined=jinja2.StrictUndefined)
     template = env.get_template(job_def['template'])
-    rendered = template.render(**job_def['context'])
+    context = utils.deep_merge(job_def['context'], context_overrides)
+    rendered = template.render(**context)
     rendered = rendered.encode('utf8')
     rendered = rendered.strip()
     if pipe_info is not None:
