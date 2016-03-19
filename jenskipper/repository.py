@@ -120,5 +120,6 @@ def get_job_conf(base_dir, job_name, context_overrides={}):
     job_def = jobs_defs[job_name]
     pipe_info = pipelines.get(job_name)
     templates_dir = get_templates_dir(base_dir)
-    return jobs.render_job(job_def, pipe_info, templates_dir,
+    return jobs.render_job(templates_dir, job_def['template'],
+                           job_def['context'], pipe_info,
                            context_overrides=context_overrides)

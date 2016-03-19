@@ -79,20 +79,18 @@ def _create_elt(tag, text=None):
     return elt
 
 
-def render_job(job_def, pipe_info, templates_dir, insert_hash=False,
+def render_job(templates_dir, template, context, pipe_info, insert_hash=False,
                context_overrides={}):
     '''
-    Render a job XML from job definition *job_def*, templates in
-    *templates_dir* and pipeline infos *pipe_info*.
+    Render a job XML from job definition.
 
     If *insert_hash* is true, also include a hash of the configuration as text
     in the job description.
 
-    :param job_def:
-        the job definition dict, with the same form as values in
-        :func:`jenskipper.repository.get_jobs_defs`
-    :param pipe_info: a ``(parents, link_type)`` tuple
     :param templates_dir: location of the jobs templates
+    :param template: the path to the job template, relative to *templates_dir*
+    :param context: a dict containing the variables passed to the tamplate
+    :param pipe_info: a ``(parents, link_type)`` tuple
     :param insert_hash:
         a boolean indicating if a hash of the job config should be inserted in
         the job description
@@ -102,8 +100,8 @@ def render_job(job_def, pipe_info, templates_dir, insert_hash=False,
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir),
                              autoescape=True,
                              undefined=jinja2.StrictUndefined)
-    template = env.get_template(job_def['template'])
-    context = utils.deep_merge(job_def['context'], context_overrides)
+    template = env.get_template(template)
+    context = utils.deep_merge(context, context_overrides)
     rendered = template.render(**context)
     rendered = rendered.encode('utf8')
     rendered = rendered.strip()
