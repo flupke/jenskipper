@@ -2,9 +2,8 @@ from xml.etree import ElementTree
 import hashlib
 import re
 
-import jinja2
 
-from . import utils
+from . import templates
 
 
 LINK_ELTS = {
@@ -97,14 +96,10 @@ def render_job(templates_dir, template, context, pipe_info, insert_hash=False,
     :param context_overrides:
         a mapping that will be deep merged in the final context
     '''
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir),
-                             autoescape=True,
-                             undefined=jinja2.StrictUndefined)
-    template = env.get_template(template)
-    context = utils.deep_merge(context, context_overrides)
-    rendered = template.render(**context)
-    rendered = rendered.encode('utf8')
+    rendered = templates.render(templates_dir, template, context,
+                                context_overrides=context_overrides)
     rendered = rendered.strip()
+    rendered = rendered.encode('utf8')
     if pipe_info is not None:
         parents, link_type = pipe_info
         rendered = merge_pipeline_conf(rendered, parents, link_type)
