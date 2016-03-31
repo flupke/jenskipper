@@ -25,13 +25,12 @@ def test_extract_jinja_error_undefined_variable(data_dir):
     try:
         templates.render(unicode(data_dir), tpl_name, {})
     except jinja2.UndefinedError:
-        title, stack, error = templates.extract_jinja_error(sys.exc_info())
-    assert title == 'Undefined variable encountered in template'
+        stack, error = templates.extract_jinja_error(sys.exc_info())
     assert stack == [
         '  File "%s", line 1' % tpl_path,
         '    My name is {{ name }}',
     ]
-    assert error == "'name' is undefined"
+    assert error == "Undefined variable: 'name' is undefined"
 
 
 def test_extract_jinja_error_syntax_error(data_dir):
@@ -39,12 +38,25 @@ def test_extract_jinja_error_syntax_error(data_dir):
     try:
         templates.render(unicode(data_dir), tpl_name, {})
     except jinja2.TemplateSyntaxError:
-        title, stack, error = templates.extract_jinja_error(sys.exc_info())
+        stack, error = templates.extract_jinja_error(sys.exc_info())
     tpl_path = data_dir.join(tpl_name)
-    assert title == 'Syntax error in template'
     assert stack == [
         '  File "%s", line 1' % tpl_path,
         '    {{ foo',
     ]
-    assert error == \
-        "unexpected end of template, expected 'end of print statement'."
+    assert error == "Syntax error: unexpected end of template, expected " \
+        "'end of print statement'"
+
+
+def test_extract_jinja_error_with_fnames_prefix(data_dir):
+    tpl_name = 'template.txt'
+    try:
+        templates.render(unicode(data_dir), tpl_name, {})
+    except jinja2.UndefinedError:
+        stack, error = templates.extract_jinja_error(sys.exc_info(),
+                                                     unicode(data_dir))
+    assert stack == [
+        '  File "template.txt", line 1',
+        '    My name is {{ name }}',
+    ]
+    assert error == "Undefined variable: 'name' is undefined"
