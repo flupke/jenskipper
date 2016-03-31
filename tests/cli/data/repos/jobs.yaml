@@ -1,0 +1,8 @@
+missing_template:
+  template: no_template.xml
+
+syntax_error:
+  template: syntax_error.txt
+
+undefined_var:
+  template: undefined_var.txt

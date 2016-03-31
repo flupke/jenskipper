@@ -21,7 +21,7 @@ from .. import exceptions
 @decorators.repos_command
 @decorators.jobs_command
 @decorators.context_command
-@decorators.handle_conf_errors
+@decorators.handle_all_errors
 def diff(jobs_names, base_dir, context_overrides):
     '''
     Show diffs between JOBS in the local repository and on the server.

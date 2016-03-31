@@ -15,7 +15,7 @@ from .. import utils
 @click.option('--force/--no-force', default=False, help='Allow overwriting '
               'existing files.')
 @decorators.repos_command
-@decorators.handle_conf_errors
+@decorators.handle_all_errors
 def fetch_new(base_dir, force):
     '''
     Fetch new jobs in an existing repository.

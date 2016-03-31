@@ -2,11 +2,13 @@ import functools
 import sys
 
 import click
+import jinja2.exceptions
 
 from .. import repository
 from .. import conf
 from .. import exceptions
 from .. import utils
+from .. import templates
 
 
 def repos_command(func):
@@ -28,7 +30,7 @@ def jobs_command(func):
     '''
     Base options for jobs that take a list of jobs names.
 
-    Expects a *base_dir* argument.
+    Expects a *base_dir* argument, so normally used after ``@repos_command``.
     '''
 
     @click.argument('jobs_names', metavar='JOBS', nargs=-1)
@@ -100,3 +102,40 @@ def parse_context_vars(context_vars):
         path = path.split('.')
         utils.set_path_in_dict(ret, path, value, inplace=True)
     return ret
+
+
+def handle_jinja_errors(func):
+    '''
+    Prints nice error messages on jinja exceptions.
+
+    Expects a *base_dir* argument, so normally used after ``@repos_command``.
+    '''
+
+    @functools.wraps(func)
+    def wrapper(base_dir, **kwargs):
+        try:
+            return func(base_dir=base_dir, **kwargs)
+        except jinja2.TemplateNotFound as exc:
+            click.secho('Template not found: %s' % exc.name, fg='red',
+                        bold=True)
+        except jinja2.TemplateError:
+            exc_info = sys.exc_info()
+            stack, error = templates.extract_jinja_error(exc_info, base_dir)
+            templates.print_jinja_error(stack, error)
+        sys.exit(1)
+
+    return wrapper
+
+
+def handle_all_errors(func):
+    '''
+    A decorator that regroups all the error handling decorators.
+    '''
+
+    @handle_conf_errors
+    @handle_jinja_errors
+    @functools.wraps(func)
+    def wrapper(**kwargs):
+        return func(**kwargs)
+
+    return wrapper

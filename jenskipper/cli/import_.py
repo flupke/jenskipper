@@ -17,7 +17,7 @@ from .. import utils
 @click.command('import')
 @click.argument('jenkins_url')
 @click.argument('dest_dir')
-@decorators.handle_conf_errors
+@decorators.handle_all_errors
 def import_(jenkins_url, dest_dir):
     '''
     Import jobs from JENKINS_URL into DEST_DIR.
