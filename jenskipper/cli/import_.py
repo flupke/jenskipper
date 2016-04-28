@@ -17,7 +17,7 @@ from .. import utils
 @click.command('import')
 @click.argument('jenkins_url')
 @click.argument('dest_dir')
-@decorators.handle_all_errors
+@decorators.handle_conf_errors
 def import_(jenkins_url, dest_dir):
     '''
     Import jobs from JENKINS_URL into DEST_DIR.
@@ -102,7 +102,7 @@ def write_pipelines(base_dir, pipes_bits, mode):
 
 
 def _write_default_contexts(base_dir):
-    fname = repository.get_default_context_fname(base_dir)
+    fname = repository.get_default_contexts_fname(base_dir)
     open(fname, 'w').close()
 
 
