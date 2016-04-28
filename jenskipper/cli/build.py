@@ -33,11 +33,18 @@ def build(jobs_names, base_dir, block):
     if block:
         results = wait_for_builds(queue_urls, jenkins_url)
         for job_name, (build_url, result) in results.items():
-            print_build_result(job_name, build_url, result)
+            print_build_result(base_dir, jenkins_url, job_name, build_url,
+                               result)
         sys.exit(any(r != 'SUCCESS' for r in results.values()))
 
 
 def trigger_builds(jobs_names, base_dir, jenkins_url):
+    '''
+    Trigger builds for *jobs_names*.
+
+    Return a ``(queue_urls, jenkins_url)`` tuple; *queue_urls* can be passed
+    to :func:`wait_for_builds` to wait for jobs completion.
+    '''
     queue_urls = {}
     for name in jobs_names:
         queue_url, jenkins_url = jenkins_api.handle_auth(
@@ -51,14 +58,36 @@ def trigger_builds(jobs_names, base_dir, jenkins_url):
 
 
 def wait_for_builds(queue_urls, jenkins_url):
+    '''
+    Wait until builds corresponding to *queue_urls* are done.
+
+    Return a dict indexed by job names, containing ``(build_url, result)``
+    tuples.
+
+    *build_url* is the location of the build, e.g.
+    "http://jenkins.example.com/job/myjob/51", and *success* a string
+    representing the build result ("SUCCESS", "UNSTABLE" or "FAILURE").
+    '''
     _, username, password = utils.split_auth_in_url(jenkins_url)
     builds_urls = _get_builds_urls(queue_urls, username, password)
     return _poll_builds(builds_urls, username, password)
 
 
-def print_build_result(job_name, build_url, result, suffix=''):
+def print_build_result(base_dir, jenkins_url, job_name, build_url, result,
+                       suffix=''):
+    '''
+    Print build results of a job.
+    '''
     color = RESULT_COLORS[result]
     click.secho('%s: %s%s' % (job_name, result.lower(), suffix), fg=color)
+    if result != 'SUCCESS':
+        log, _ = jenkins_api.handle_auth(
+            base_dir,
+            jenkins_api.get_build_log,
+            jenkins_url,
+            build_url
+        )
+        print log
 
 
 def _get_builds_urls(queue_urls, username, password):

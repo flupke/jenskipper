@@ -167,3 +167,18 @@ def build_job(jenkins_url, job_name):
     if resp.status_code != 201:
         raise exceptions.BuildNotQueued(job_name)
     return resp.headers['location']
+
+
+def get_build_log(jenkins_url, build_url):
+    '''
+    Retrieve the log for build at *build_url*.
+
+    *build_url* is expected to be a full URL, as returned by
+    :func:`jenskipper.cli.build.wait_for_builds`.
+    '''
+    _, username, password = utils.split_auth_in_url(jenkins_url)
+    build_url = utils.replace_auth_in_url(build_url, username, password)
+    url = urlparse.urljoin(build_url, './consoleText')
+    resp = requests.get(url)
+    resp.raise_for_status()
+    return resp.text
