@@ -178,7 +178,7 @@ def get_build_log(jenkins_url, build_url):
     '''
     _, username, password = utils.split_auth_in_url(jenkins_url)
     build_url = utils.replace_auth_in_url(build_url, username, password)
-    url = urlparse.urljoin(build_url, './consoleText')
+    url = urlparse.urljoin(build_url, 'consoleText')
     resp = requests.get(url)
     resp.raise_for_status()
     return resp.text
