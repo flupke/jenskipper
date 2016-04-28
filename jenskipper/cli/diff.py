@@ -75,6 +75,8 @@ def _prepare_xml(xml):
 
 def _print_diff(diff):
     for line in diff:
+        if not line.endswith('\n'):
+            line += '\n'
         if line.startswith('---') or line.startswith('+++'):
             click.secho(line, fg='white', bold=True, nl=False)
         elif line.startswith('-'):
