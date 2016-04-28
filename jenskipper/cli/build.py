@@ -32,9 +32,9 @@ def build(jobs_names, base_dir, block):
     queue_urls, jenkins_url = trigger_builds(jobs_names, base_dir, jenkins_url)
     if block:
         results = wait_for_builds(queue_urls, jenkins_url)
-        for job_name, (build_url, result) in results.items():
+        for job_name, (build_url, result, runs_urls) in results.items():
             print_build_result(base_dir, jenkins_url, job_name, build_url,
-                               result)
+                               result, runs_urls)
         sys.exit(any(r != 'SUCCESS' for r in results.values()))
 
 
@@ -61,36 +61,51 @@ def wait_for_builds(queue_urls, jenkins_url):
     '''
     Wait until builds corresponding to *queue_urls* are done.
 
-    Return a dict indexed by job names, containing ``(build_url, result)``
-    tuples.
+    Return a dict indexed by job names, containing ``(build_url, result,
+    runs_urls)`` tuples.
 
     *build_url* is the location of the build, e.g.
-    "http://jenkins.example.com/job/myjob/51", and *success* a string
+    "http://jenkins.example.com/job/myjob/51", and *result* a string
     representing the build result ("SUCCESS", "UNSTABLE" or "FAILURE").
+    *runs_urls* is a (possibly empty) list of sub runs URLs for multi
+    configuration projects.
     '''
-    _, username, password = utils.split_auth_in_url(jenkins_url)
-    builds_urls = _get_builds_urls(queue_urls, username, password)
-    return _poll_builds(builds_urls, username, password)
+    builds_urls = _get_builds_urls(jenkins_url, queue_urls)
+    return _poll_builds(jenkins_url, builds_urls)
 
 
 def print_build_result(base_dir, jenkins_url, job_name, build_url, result,
-                       suffix=''):
+                       runs_urls, prefix='', suffix=''):
     '''
     Print build results of a job.
     '''
     color = RESULT_COLORS[result]
-    click.secho('%s: %s%s' % (job_name, result.lower(), suffix), fg=color)
+    click.secho('%s%s: %s%s' % (prefix, job_name, result.lower(), suffix),
+                fg=color)
     if result != 'SUCCESS':
-        log, _ = jenkins_api.handle_auth(
-            base_dir,
-            jenkins_api.get_build_log,
-            jenkins_url,
-            build_url
-        )
-        print log
+        if not runs_urls:
+            log, _ = jenkins_api.handle_auth(
+                base_dir,
+                jenkins_api.get_build_log,
+                jenkins_url,
+                build_url
+            )
+            print log.rstrip()
+        for run_url in runs_urls:
+            run_info = _get_build_infos(jenkins_url, run_url)
+            print_build_result(
+                base_dir,
+                jenkins_url,
+                run_info['fullDisplayName'],
+                run_url,
+                run_info['result'],
+                [],
+                prefix='    '
+            )
 
 
-def _get_builds_urls(queue_urls, username, password):
+def _get_builds_urls(jenkins_url, queue_urls):
+    _, username, password = utils.split_auth_in_url(jenkins_url)
     ret = {}
     queue_urls = queue_urls.copy()
     while queue_urls:
@@ -116,19 +131,28 @@ def _get_builds_urls(queue_urls, username, password):
     return ret
 
 
-def _poll_builds(builds_urls, username, password):
+def _poll_builds(jenkins_url, builds_urls):
     ret = {}
     builds_urls = builds_urls.copy()
     while builds_urls:
         for job_name, build_url in builds_urls.items():
-            job_url = urlparse.urljoin(build_url, 'api/json')
-            job_url = utils.replace_auth_in_url(job_url, username, password)
-            resp = requests.get(job_url)
-            resp.raise_for_status()
-            resp_dict = resp.json()
-            result = resp_dict['result']
+            build_infos = _get_build_infos(jenkins_url, build_url)
+            result = build_infos['result']
             if result is not None:
-                ret[job_name] = (build_url, result)
+                if 'runs' in build_infos:
+                    runs_urls = [r['url'] for r in build_infos['runs']]
+                else:
+                    runs_urls = []
+                ret[job_name] = (build_url, result, runs_urls)
                 del builds_urls[job_name]
         time.sleep(1)
     return ret
+
+
+def _get_build_infos(jenkins_url, build_url):
+    _, username, password = utils.split_auth_in_url(jenkins_url)
+    job_url = urlparse.urljoin(build_url, 'api/json')
+    job_url = utils.replace_auth_in_url(job_url, username, password)
+    resp = requests.get(job_url)
+    resp.raise_for_status()
+    return resp.json()
