@@ -42,6 +42,5 @@ def fetch_new(base_dir, force):
             sys.exit(2)
         import_.write_jobs_defs(base_dir, jobs_templates, 'a', pad_lines=1)
         import_.write_pipelines(base_dir, pipes_bits, 'a')
-        utils.print_jobs_list('New jobs:', new_jobs, fg='green')
     utils.print_jobs_list('New jobs:', new_jobs, empty_label='No new jobs',
                           fg='green')
