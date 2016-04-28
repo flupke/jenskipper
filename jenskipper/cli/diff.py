@@ -75,13 +75,12 @@ def _prepare_xml(xml):
 
 def _print_diff(diff):
     for line in diff:
-        if not line.endswith('\n'):
-            line += '\n'
+        line = line.rstrip()
         if line.startswith('---') or line.startswith('+++'):
-            click.secho(line, fg='white', bold=True, nl=False)
+            click.secho(line, fg='white', bold=True)
         elif line.startswith('-'):
-            click.secho(line, fg='red', nl=False)
+            click.secho(line, fg='red')
         elif line.startswith('+'):
-            click.secho(line, fg='green', nl=False)
+            click.secho(line, fg='green')
         else:
-            click.secho(line, nl=False)
+            click.secho(line)
