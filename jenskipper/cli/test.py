@@ -28,7 +28,7 @@ def test(jobs_names, base_dir, context_overrides):
                                                     context_overrides)
     queue_urls, jenkins_url = build.trigger_builds(new_jobs_names, base_dir,
                                                    jenkins_url)
-    results = build.wait_for_jobs(queue_urls, jenkins_url)
+    results = build.wait_for_builds(queue_urls, jenkins_url)
     _process_results(results, jenkins_url)
 
 
@@ -48,11 +48,11 @@ def _create_temp_jobs(jobs_names, base_dir, jenkins_url, context_overrides):
 
 
 def _process_results(results, jenkins_url):
-    for job_name, (job_url, result) in results.items():
+    for job_name, (build_url, result) in results.items():
         orig_job_name, _, _ = job_name.rpartition('.')
         if result == 'SUCCESS':
             jenkins_api.delete_job(jenkins_url, job_name)
             suffix = ''
         else:
-            suffix = ', see %s' % job_url
-        build.print_job_result(orig_job_name, result, suffix)
+            suffix = ', see %s' % build_url
+        build.print_build_result(orig_job_name, build_url, result, suffix)

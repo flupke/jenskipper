@@ -31,9 +31,9 @@ def build(jobs_names, base_dir, block):
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     queue_urls, jenkins_url = trigger_builds(jobs_names, base_dir, jenkins_url)
     if block:
-        results = wait_for_jobs(queue_urls, jenkins_url)
-        for job_name, (_, result) in results.items():
-            print_job_result(job_name, result)
+        results = wait_for_builds(queue_urls, jenkins_url)
+        for job_name, (build_url, result) in results.items():
+            print_build_result(job_name, build_url, result)
         sys.exit(any(r != 'SUCCESS' for r in results.values()))
 
 
@@ -50,18 +50,18 @@ def trigger_builds(jobs_names, base_dir, jenkins_url):
     return queue_urls, jenkins_url
 
 
-def wait_for_jobs(queue_urls, jenkins_url):
+def wait_for_builds(queue_urls, jenkins_url):
     _, username, password = utils.split_auth_in_url(jenkins_url)
-    jobs_urls = _get_jobs_urls(queue_urls, username, password)
-    return _poll_jobs(jobs_urls, username, password)
+    builds_urls = _get_builds_urls(queue_urls, username, password)
+    return _poll_builds(builds_urls, username, password)
 
 
-def print_job_result(job_name, result, suffix=''):
+def print_build_result(job_name, build_url, result, suffix=''):
     color = RESULT_COLORS[result]
     click.secho('%s: %s%s' % (job_name, result.lower(), suffix), fg=color)
 
 
-def _get_jobs_urls(queue_urls, username, password):
+def _get_builds_urls(queue_urls, username, password):
     ret = {}
     queue_urls = queue_urls.copy()
     while queue_urls:
@@ -87,19 +87,19 @@ def _get_jobs_urls(queue_urls, username, password):
     return ret
 
 
-def _poll_jobs(jobs_urls, username, password):
+def _poll_builds(builds_urls, username, password):
     ret = {}
-    jobs_urls = jobs_urls.copy()
-    while jobs_urls:
-        for job_name, job_url_base in jobs_urls.items():
-            job_url = urlparse.urljoin(job_url_base, 'api/json')
+    builds_urls = builds_urls.copy()
+    while builds_urls:
+        for job_name, build_url in builds_urls.items():
+            job_url = urlparse.urljoin(build_url, 'api/json')
             job_url = utils.replace_auth_in_url(job_url, username, password)
             resp = requests.get(job_url)
             resp.raise_for_status()
             resp_dict = resp.json()
             result = resp_dict['result']
             if result is not None:
-                ret[job_name] = (job_url_base, result)
-                del jobs_urls[job_name]
+                ret[job_name] = (build_url, result)
+                del builds_urls[job_name]
         time.sleep(1)
     return ret
