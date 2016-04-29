@@ -6,7 +6,7 @@ from jenskipper import __version__
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(HERE, 'README.rst')).read()
-NEWS = open(os.path.join(HERE, 'NEWS.txt')).read()
+NEWS = open(os.path.join(HERE, 'NEWS.rst')).read()
 
 
 setup(
