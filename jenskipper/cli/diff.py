@@ -83,6 +83,7 @@ def print_job_diff(base_dir, jenkins_url, job_name, context_overrides,
         from_file, to_file = to_file, from_file
     diff = difflib.unified_diff(from_text, to_text, fromfile=from_file,
                                 tofile=to_file)
+    diff = list(diff)
     _print_diff(diff)
     return max(len(diff), 1)
 
