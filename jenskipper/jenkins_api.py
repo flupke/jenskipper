@@ -61,10 +61,7 @@ def list_jobs(jenkins_url):
     '''
     Get the names of jobs on the *jenkins_url* server.
     '''
-    url = urlparse.urljoin(jenkins_url, '/api/json')
-    resp = requests.get(url)
-    resp.raise_for_status()
-    data = resp.json()
+    data = get_object(jenkins_url, '')
     return [j['name'] for j in data['jobs']]
 
 
@@ -182,3 +179,13 @@ def get_build_log(jenkins_url, build_url):
     resp = requests.get(url)
     resp.raise_for_status()
     return resp.text
+
+
+def get_object(jenkins_url, path):
+    '''
+    Get data from ``api/json`` jenkins pages.
+    '''
+    url = urlparse.urljoin(jenkins_url, '%s/api/json' % path)
+    resp = requests.get(url)
+    resp.raise_for_status()
+    return resp.json()
