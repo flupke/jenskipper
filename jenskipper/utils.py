@@ -13,9 +13,12 @@ except ImportError:
     HAVE_LXML = False
 
 
-def format_xml(text):
+def clean_xml(text):
     '''
-    Format the XML in *text*.
+    Clean XML in *text*
+
+    If :mod:`lxml` is available, remove blank text and pretty print it. If
+    :mod:`lxml` is not available, return *text* as is.
     '''
     text = text.strip()
     if HAVE_LXML:

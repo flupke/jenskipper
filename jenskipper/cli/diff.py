@@ -88,7 +88,7 @@ def print_job_diff(base_dir, jenkins_url, job_name, context_overrides,
 
 
 def _prepare_xml(xml):
-    xml = utils.format_xml(xml)
+    xml = utils.clean_xml(xml)
     xml = utils.unescape_xml(xml)
     xml = xml.replace('\r\n', '\n')
     _, xml = jobs.extract_hash_from_description(xml)
