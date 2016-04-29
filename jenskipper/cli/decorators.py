@@ -80,7 +80,8 @@ def context_command(func):
     @click.option('--context', '-c', 'context_vars', multiple=True,
                   metavar='VAR=VALUE', help='Override context VAR with '
                   'VALUE; use --context multiple times to override multiple '
-                  'variables.')
+                  'variables. Use dots to target a nested variable: '
+                  'foo.bar=baz')
     @functools.wraps(func)
     def wrapper(context_vars, **kwargs):
         try:
