@@ -11,7 +11,7 @@ template
     directory.
 
 default_context:
-    Name of a context in ``context.yaml`` to pass to the template. If
+    Name of a context in ``contexts.yaml`` to pass to the template. If
     unspecified, defaults to ``default``.
 
 context
