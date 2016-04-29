@@ -20,7 +20,7 @@ from .. import exceptions
 @decorators.repos_command
 @decorators.jobs_command
 @decorators.context_command
-@decorators.handle_all_errors
+@decorators.handle_all_errors()
 def push(jobs_names, base_dir, force, allow_overwrite, context_overrides):
     '''
     Push JOBS to the Jenkins server.

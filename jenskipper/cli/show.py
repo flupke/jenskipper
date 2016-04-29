@@ -8,7 +8,7 @@ from .. import repository
 @click.argument('job_name')
 @decorators.repos_command
 @decorators.context_command
-@decorators.handle_all_errors
+@decorators.handle_all_errors()
 def show(job_name, base_dir, context_overrides):
     '''
     Show the rendered XML of JOB_NAME.

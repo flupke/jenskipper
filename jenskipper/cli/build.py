@@ -23,7 +23,7 @@ RESULT_COLORS = {
               'are done and show their outcome.')
 @decorators.repos_command
 @decorators.jobs_command
-@decorators.handle_all_errors
+@decorators.handle_all_errors()
 def build(jobs_names, base_dir, block):
     '''
     Trigger builds for JOBS.

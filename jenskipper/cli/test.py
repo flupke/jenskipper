@@ -13,7 +13,7 @@ from .. import repository
 @decorators.repos_command
 @decorators.jobs_command
 @decorators.context_command
-@decorators.handle_all_errors
+@decorators.handle_all_errors()
 def test(jobs_names, base_dir, context_overrides):
     '''
     Create temporary copies of JOBS and execute them.

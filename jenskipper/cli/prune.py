@@ -11,7 +11,7 @@ from .. import conf
 @click.option('--confirm/--no-confirm', default=True, help='Do not confirm '
               'jobs deletion.')
 @decorators.repos_command
-@decorators.handle_all_errors
+@decorators.handle_all_errors()
 def prune(base_dir, confirm):
     '''
     Remove all jobs on the server that are not present in the repository.

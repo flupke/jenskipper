@@ -144,16 +144,32 @@ def handle_yaml_errors(func):
     return wrapper
 
 
-def handle_all_errors(func):
+def handle_all_errors(for_repos_command=True):
     '''
-    A decorator that regroups all the error handling decorators.
+    Return a decorator that regroups all the error handling decorators.
+
+    Set *for_repos_command* to false for commands not operating inside a
+    Jenskipper repository.
     '''
 
-    @handle_conf_errors
-    @handle_jinja_errors
-    @handle_yaml_errors
-    @functools.wraps(func)
-    def wrapper(**kwargs):
-        return func(**kwargs)
+    def decorator(func):
+        if for_repos_command:
 
-    return wrapper
+            @handle_conf_errors
+            @handle_jinja_errors
+            @handle_yaml_errors
+            @functools.wraps(func)
+            def wrapper(**kwargs):
+                return func(**kwargs)
+
+        else:
+
+            @handle_conf_errors
+            @handle_yaml_errors
+            @functools.wraps(func)
+            def wrapper(**kwargs):
+                return func(**kwargs)
+
+        return wrapper
+
+    return decorator

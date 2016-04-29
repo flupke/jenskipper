@@ -6,7 +6,7 @@ from .. import repository
 
 @click.command('list-jobs')
 @decorators.repos_command
-@decorators.handle_all_errors
+@decorators.handle_all_errors()
 def list_jobs(base_dir):
     '''
     List jobs in a repository.

@@ -11,7 +11,7 @@ from .. import repository
 @click.option('--delete/--no-delete', default=False, help='Delete '
               'unused templates.')
 @decorators.repos_command
-@decorators.handle_all_errors
+@decorators.handle_all_errors()
 def sweep(base_dir, delete):
     '''
     Find unused templates in the current repository.
