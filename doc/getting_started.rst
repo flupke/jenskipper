@@ -154,6 +154,12 @@ You can also trigger a build from the command line:
 
     $ jk build bar-tests
 
+You can even wait for the build to complete and display logs in case of error:
+
+.. code-block:: shell-session
+
+    $ jk build bar-tests --block
+
 Fetching new jobs from the server
 ---------------------------------
 
