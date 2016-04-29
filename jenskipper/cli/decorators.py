@@ -3,6 +3,7 @@ import sys
 
 import click
 import jinja2.exceptions
+import yaml.error
 
 from .. import repository
 from .. import conf
@@ -106,9 +107,9 @@ def parse_context_vars(context_vars):
 
 def handle_jinja_errors(func):
     '''
-    Prints nice error messages on jinja exceptions.
+    Print nice error messages on jinja exceptions.
 
-    Expects a *base_dir* argument, so normally used after ``@repos_command``.
+    Expect a *base_dir* argument, so normally used after ``@repos_command``.
     '''
 
     @functools.wraps(func)
@@ -127,6 +128,22 @@ def handle_jinja_errors(func):
     return wrapper
 
 
+def handle_yaml_errors(func):
+    '''
+    Print nice error messages on yaml parse errors.
+    '''
+
+    @functools.wraps(func)
+    def wrapper(**kwargs):
+        try:
+            return func(**kwargs)
+        except yaml.error.MarkedYAMLError as exc:
+            click.secho(u'YAML parser error: %s' % exc, fg='red', bold=True)
+        sys.exit(1)
+
+    return wrapper
+
+
 def handle_all_errors(func):
     '''
     A decorator that regroups all the error handling decorators.
@@ -134,6 +151,7 @@ def handle_all_errors(func):
 
     @handle_conf_errors
     @handle_jinja_errors
+    @handle_yaml_errors
     @functools.wraps(func)
     def wrapper(**kwargs):
         return func(**kwargs)
