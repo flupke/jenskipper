@@ -33,8 +33,8 @@ def build(jobs_names, base_dir, block):
     if block:
         results = wait_for_builds(queue_urls, jenkins_url)
         for job_name, (build_url, result, runs_urls) in results.items():
-            print_build_result(base_dir, jenkins_url, job_name, build_url,
-                               result, runs_urls)
+            jenkins_url = print_build_result(base_dir, jenkins_url, job_name,
+                                             build_url, result, runs_urls)
         sys.exit(any(r != 'SUCCESS' for r in results.values()))
 
 
@@ -84,7 +84,7 @@ def print_build_result(base_dir, jenkins_url, job_name, build_url, result,
                 fg=color)
     if result != 'SUCCESS':
         if not runs_urls:
-            log, _ = jenkins_api.handle_auth(
+            log, jenkins_url = jenkins_api.handle_auth(
                 base_dir,
                 jenkins_api.get_build_log,
                 jenkins_url,
@@ -93,7 +93,7 @@ def print_build_result(base_dir, jenkins_url, job_name, build_url, result,
             print log.rstrip()
         for run_url in runs_urls:
             run_info = _get_build_infos(jenkins_url, run_url)
-            print_build_result(
+            jenkins_url = print_build_result(
                 base_dir,
                 jenkins_url,
                 run_info['fullDisplayName'],
@@ -102,6 +102,7 @@ def print_build_result(base_dir, jenkins_url, job_name, build_url, result,
                 [],
                 prefix='    '
             )
+    return jenkins_url
 
 
 def _get_builds_urls(jenkins_url, queue_urls):

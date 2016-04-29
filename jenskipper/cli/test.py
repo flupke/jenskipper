@@ -29,7 +29,7 @@ def test(jobs_names, base_dir, context_overrides):
     queue_urls, jenkins_url = build.trigger_builds(new_jobs_names, base_dir,
                                                    jenkins_url)
     results = build.wait_for_builds(queue_urls, jenkins_url)
-    _process_results(base_dir, jenkins_url, results)
+    jenkins_url = _process_results(base_dir, jenkins_url, results)
 
 
 def _create_temp_jobs(jobs_names, base_dir, jenkins_url, context_overrides):
@@ -55,5 +55,8 @@ def _process_results(base_dir, jenkins_url, results):
             suffix = ''
         else:
             suffix = ', see %s' % build_url
-        build.print_build_result(base_dir, jenkins_url, orig_job_name,
-                                 build_url, result, runs_urls, suffix=suffix)
+        jenkins_url = build.print_build_result(base_dir, jenkins_url,
+                                               orig_job_name, build_url,
+                                               result, runs_urls,
+                                               suffix=suffix)
+    return jenkins_url
