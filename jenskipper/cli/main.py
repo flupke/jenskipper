@@ -10,6 +10,7 @@ from .build import build
 from .prune import prune
 from .test import test
 from .sweep import sweep
+from .log import log
 
 
 @click.group()
@@ -29,3 +30,4 @@ main.add_command(build)
 main.add_command(prune)
 main.add_command(test)
 main.add_command(sweep)
+main.add_command(log)

@@ -73,15 +73,36 @@ def wait_for_builds(queue_urls, jenkins_url):
     return _poll_builds(jenkins_url, builds_urls)
 
 
-def print_build_result(base_dir, jenkins_url, job_name, build_url, result,
-                       runs_urls, prefix='', suffix=''):
+def print_build_result(base_dir, jenkins_url, job_name, build_url, result=None,
+                       runs_urls=None, prefix='', suffix='',
+                       only_log_failures=True):
     '''
     Print build results of a job.
     '''
+    # Get result and/or runs URLs if not given in arguments
+    if result is None or runs_urls is None:
+        build_infos, jenkins_url = jenkins_api.handle_auth(
+            base_dir,
+            jenkins_api.get_object,
+            jenkins_url,
+            build_url
+        )
+    if result is None:
+        result = build_infos['result']
+    if runs_urls is None:
+        runs_urls = _get_runs_urls(build_infos)
+
+    # A null result means the build is in progress
+    if result is None:
+        click.secho('%s%s: build is in progress%s' %
+                    (prefix, job_name, suffix), fg='yellow')
+        return jenkins_url
+
+    # Print results
     color = RESULT_COLORS[result]
     click.secho('%s%s: %s%s' % (prefix, job_name, result.lower(), suffix),
                 fg=color)
-    if result != 'SUCCESS':
+    if not only_log_failures or result != 'SUCCESS':
         if not runs_urls:
             log, jenkins_url = jenkins_api.handle_auth(
                 base_dir,
@@ -99,7 +120,8 @@ def print_build_result(base_dir, jenkins_url, job_name, build_url, result,
                 run_url,
                 run_info['result'],
                 [],
-                prefix='    '
+                prefix='    ',
+                only_log_failures=only_log_failures,
             )
     return jenkins_url
 
