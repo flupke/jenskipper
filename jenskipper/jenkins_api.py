@@ -181,11 +181,16 @@ def get_build_log(jenkins_url, build_url):
     return resp.text
 
 
-def get_object(jenkins_url, path):
+def get_object(jenkins_url, path_or_url):
     '''
-    Get data from ``api/json`` jenkins pages.
+    Get data from the ``api/json`` page of *path_or_url* in *jenkins_url*.
+
+    *path_or_url* can be a path relative to *jenkins_url* or a full jenkins URL
+    (usefull for URLs coming from the Jenkins API that do not carry login
+    information).
     '''
-    url = urlparse.urljoin(jenkins_url, '%s/api/json' % path)
+    parsed = urlparse.urlparse(path_or_url)
+    url = urlparse.urljoin(jenkins_url, '%s/api/json' % parsed.path)
     resp = requests.get(url)
     resp.raise_for_status()
     return resp.json()
