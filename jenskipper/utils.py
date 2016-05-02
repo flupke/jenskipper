@@ -71,6 +71,14 @@ def split_auth_in_url(url):
     return urlparse.urlunparse(without_auth), parsed.username, parsed.password
 
 
+def transplant_url_auth(source_url, dest_url):
+    '''
+    Take auth bits from *source_url* and put them in *dest_url*.
+    '''
+    _, username, password = split_auth_in_url(source_url)
+    return replace_auth_in_url(dest_url, username, password)
+
+
 def _get_hostport(parsed_url):
     hostport = parsed_url.hostname
     if parsed_url.port is not None:
