@@ -7,3 +7,8 @@ News
 New features:
 
 * ``jk log``
+
+0.0.1
+-----
+
+First public release
