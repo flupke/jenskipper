@@ -1,5 +1,4 @@
 import sys
-import urlparse
 import time
 
 import requests
@@ -92,7 +91,7 @@ def print_build_result(base_dir, jenkins_url, job_name, build_url, result,
             )
             print log.rstrip()
         for run_url in runs_urls:
-            run_info = _get_build_infos(jenkins_url, run_url)
+            run_info = jenkins_api.get_object(jenkins_url, run_url)
             jenkins_url = print_build_result(
                 base_dir,
                 jenkins_url,
@@ -111,23 +110,22 @@ def _get_builds_urls(jenkins_url, queue_urls):
     queue_urls = queue_urls.copy()
     while queue_urls:
         for job_name, queue_url in queue_urls.items():
-            queue_url = utils.replace_auth_in_url(queue_url, username,
-                                                  password)
-            queue_url = urlparse.urljoin(queue_url, 'api/json')
-            resp = requests.get(queue_url)
-            if resp.status_code == 200:
-                resp_dict = resp.json()
-                if 'executable' in resp_dict:
-                    ret[job_name] = resp_dict['executable']['url']
+            try:
+                queue_infos = jenkins_api.get_object(jenkins_url, queue_url)
+            except requests.HTTPError as exc:
+                if exc.response.status_code == 404:
+                    # A 404 means that the queue info is not available anymore.
+                    # We don't have any way to tell if the job was executed or
+                    # not in this case, so just ignore it.
+                    utils.sechowrap('%s: unknown status' % job_name,
+                                    fg='yellow')
                     del queue_urls[job_name]
-            elif resp.status_code == 404:
-                # A 404 means that the queue info is not available anymore. We
-                # don't have any way to tell if the job was executed or not in
-                # this case, so just ignore it.
-                utils.sechowrap('%s: unknown status' % job_name, fg='yellow')
-                del queue_urls[job_name]
+                else:
+                    raise
             else:
-                resp.raise_for_status()
+                if 'executable' in queue_infos:
+                    ret[job_name] = queue_infos['executable']['url']
+                    del queue_urls[job_name]
         time.sleep(1)
     return ret
 
@@ -137,23 +135,18 @@ def _poll_builds(jenkins_url, builds_urls):
     builds_urls = builds_urls.copy()
     while builds_urls:
         for job_name, build_url in builds_urls.items():
-            build_infos = _get_build_infos(jenkins_url, build_url)
+            build_infos = jenkins_api.get_object(jenkins_url, build_url)
             result = build_infos['result']
             if result is not None:
-                if 'runs' in build_infos:
-                    runs_urls = [r['url'] for r in build_infos['runs']]
-                else:
-                    runs_urls = []
+                runs_urls = _get_runs_urls(build_infos)
                 ret[job_name] = (build_url, result, runs_urls)
                 del builds_urls[job_name]
         time.sleep(1)
     return ret
 
 
-def _get_build_infos(jenkins_url, build_url):
-    _, username, password = utils.split_auth_in_url(jenkins_url)
-    job_url = urlparse.urljoin(build_url, 'api/json')
-    job_url = utils.replace_auth_in_url(job_url, username, password)
-    resp = requests.get(job_url)
-    resp.raise_for_status()
-    return resp.json()
+def _get_runs_urls(build_infos):
+    if 'runs' in build_infos:
+        return [r['url'] for r in build_infos['runs']]
+    else:
+        return []
