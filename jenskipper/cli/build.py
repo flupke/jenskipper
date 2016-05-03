@@ -110,7 +110,13 @@ def print_build_result(base_dir, jenkins_url, job_name, build_url, result=None,
                 jenkins_url,
                 build_url
             )
+            print '-' * 79
+            print 'Beginning of "%s" logs' % job_name.encode('utf8')
+            print '-' * 79
             print log.rstrip()
+            print '-' * 79
+            print 'End of "%s" logs' % job_name.encode('utf8')
+            print '-' * 79
         for run_url in runs_urls:
             run_info = jenkins_api.get_object(jenkins_url, run_url)
             jenkins_url = print_build_result(
