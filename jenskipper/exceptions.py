@@ -53,3 +53,13 @@ class BuildNotQueued(JenskipperError):
 class MalformedContextVar(JenskipperError):
 
     pass
+
+
+class MissingParametrizedBuildParameters(JenskipperError):
+
+    pass
+
+
+class MalformedBuildParameter(JenskipperError):
+
+    pass

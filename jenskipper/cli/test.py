@@ -10,11 +10,12 @@ from .. import repository
 
 
 @click.command()
+@decorators.build_command
 @decorators.repos_command
 @decorators.jobs_command
 @decorators.context_command
 @decorators.handle_all_errors()
-def test(jobs_names, base_dir, context_overrides):
+def test(jobs_names, base_dir, context_overrides, build_parameters):
     '''
     Create temporary copies of JOBS and execute them.
 
@@ -26,8 +27,12 @@ def test(jobs_names, base_dir, context_overrides):
                                                     base_dir,
                                                     jenkins_url,
                                                     context_overrides)
-    queue_urls, jenkins_url = build.trigger_builds(new_jobs_names, base_dir,
-                                                   jenkins_url)
+    queue_urls, jenkins_url = build.trigger_builds(
+        new_jobs_names,
+        base_dir,
+        jenkins_url,
+        build_parameters
+    )
     results = build.wait_for_builds(queue_urls, jenkins_url)
     jenkins_url = _process_results(base_dir, jenkins_url, results)
 

@@ -97,6 +97,40 @@ def context_command(func):
     return wrapper
 
 
+def build_command(func):
+    '''
+    Common options and mechanisms for commands that trigger builds.
+    '''
+
+    @click.option('--parameter', '-p', 'build_parameters',
+                  metavar='PARAM=VALUE', multiple=True,
+                  help='Pass parameter PARAM with VALUE to a '
+                  'parametrized build. Use --parameter multiple times to pass '
+                  'multiple parameters.')
+    @functools.wraps(func)
+    def wrapper(build_parameters, **kwargs):
+        try:
+            build_parameters = parse_build_parameters(build_parameters)
+        except exceptions.MalformedBuildParameter as exc:
+            click.secho('Malformed parameter in command line: %s' % exc,
+                        fg='red', bold=True)
+            click.secho('')
+            click.secho('Use PARAM=VALUE format.', fg='green')
+            sys.exit(1)
+        try:
+            return func(build_parameters=build_parameters, **kwargs)
+        except exceptions.MissingParametrizedBuildParameters as exc:
+            utils.sechowrap('The job "%s" expects build parameters.' % exc,
+                            fg='red', bold=True)
+            utils.sechowrap('')
+            utils.sechowrap('You can pass parameters with the --parameter '
+                            'option. Use --help to display the full '
+                            'documentation.', fg='green')
+            sys.exit(1)
+
+    return wrapper
+
+
 def parse_context_vars(context_vars):
     ret = {}
     for spec in context_vars:
@@ -105,6 +139,16 @@ def parse_context_vars(context_vars):
             raise exceptions.MalformedContextVar(spec)
         path = path.split('.')
         utils.set_path_in_dict(ret, path, value, inplace=True)
+    return ret
+
+
+def parse_build_parameters(specs):
+    ret = {}
+    for spec in specs:
+        name, sep, value = spec.partition('=')
+        if sep != '=':
+            raise exceptions.MalformedBuildParameter(spec)
+        ret[name] = value
     return ret
 
 

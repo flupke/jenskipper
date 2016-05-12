@@ -156,19 +156,19 @@ def build_job(jenkins_url, job_name, parameters=None):
     '''
     Trigger a build for *job_name*.
 
+    To trigger a parametrized build, pass a dict containing the build
+    parameters in *parameters*.
+
     Return the URL of the item in the builds queue.
     '''
     if parameters:
         url = urlparse.urljoin(jenkins_url,
                                '/job/%s/buildWithParameters' % job_name)
-        data = {}
-        for spec in parameters:
-            name, _, value = spec.partition('=')
-            data[name] = value
     else:
         url = urlparse.urljoin(jenkins_url, '/job/%s/build' % job_name)
-        data = None
-    resp = requests.post(url, data)
+    resp = requests.post(url, parameters)
+    if resp.status_code == 400:
+        raise exceptions.MissingParametrizedBuildParameters(job_name)
     resp.raise_for_status()
     if resp.status_code != 201:
         raise exceptions.BuildNotQueued(job_name)
