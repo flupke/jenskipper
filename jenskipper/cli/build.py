@@ -20,15 +20,19 @@ RESULT_COLORS = {
 @click.command()
 @click.option('--block/--no-block', default=False, help='Block until builds '
               'are done and show their outcome.')
+@click.option('--parameter', '-p', 'parameters', multiple=True, help='Pass a '
+              'parameter to the build, in NAME=VALUE format. Use --parameter '
+              'multiple times to pass multiple parameters.')
 @decorators.repos_command
 @decorators.jobs_command
 @decorators.handle_all_errors()
-def build(jobs_names, base_dir, block):
+def build(jobs_names, base_dir, block, parameters):
     '''
     Trigger builds for JOBS.
     '''
     jenkins_url = conf.get(base_dir, ['server', 'location'])
-    queue_urls, jenkins_url = trigger_builds(jobs_names, base_dir, jenkins_url)
+    queue_urls, jenkins_url = trigger_builds(jobs_names, base_dir, jenkins_url,
+                                             parameters)
     if block:
         results = wait_for_builds(queue_urls, jenkins_url)
         for job_name, (build_url, result, runs_urls) in results.items():
@@ -37,7 +41,7 @@ def build(jobs_names, base_dir, block):
         sys.exit(any(r != 'SUCCESS' for r in results.values()))
 
 
-def trigger_builds(jobs_names, base_dir, jenkins_url):
+def trigger_builds(jobs_names, base_dir, jenkins_url, parameters):
     '''
     Trigger builds for *jobs_names*.
 
@@ -50,7 +54,8 @@ def trigger_builds(jobs_names, base_dir, jenkins_url):
             base_dir,
             jenkins_api.build_job,
             jenkins_url,
-            name
+            name,
+            parameters
         )
         queue_urls[name] = queue_url
     return queue_urls, jenkins_url
