@@ -89,6 +89,8 @@ def context_command(func):
         except exceptions.MalformedContextVar as exc:
             click.secho('Malformed context var in command-line: %s' % exc,
                         fg='red', bold=True)
+            click.secho('')
+            click.secho('Use PATH.TO.VAR=VALUE format.', fg='green')
             sys.exit(1)
         return func(context_overrides=context_overrides, **kwargs)
 
