@@ -169,6 +169,8 @@ def build_job(jenkins_url, job_name, parameters=None):
     resp = requests.post(url, parameters)
     if resp.status_code == 400:
         raise exceptions.MissingParametrizedBuildParameters(job_name)
+    if resp.status_code == 500:
+        raise exceptions.BuildIsNotParametrized(job_name)
     resp.raise_for_status()
     if resp.status_code != 201:
         raise exceptions.BuildNotQueued(job_name)

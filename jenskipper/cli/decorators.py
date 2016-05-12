@@ -127,6 +127,11 @@ def build_command(func):
                             'option. Use --help to display the full '
                             'documentation.', fg='green')
             sys.exit(1)
+        except exceptions.BuildIsNotParametrized as exc:
+            utils.sechowrap('The job "%s" is not parametrized, but you passed '
+                            'parameters on the command line.' % exc, fg='red',
+                            bold=True)
+            sys.exit(1)
 
     return wrapper
 

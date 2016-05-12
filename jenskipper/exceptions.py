@@ -63,3 +63,8 @@ class MissingParametrizedBuildParameters(JenskipperError):
 class MalformedBuildParameter(JenskipperError):
 
     pass
+
+
+class BuildIsNotParametrized(JenskipperError):
+
+    pass
