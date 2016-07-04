@@ -9,6 +9,9 @@ from .. import jenkins_api
 from .. import repository
 
 
+TEMP_JOBS_INFIX = '.JK_TEST'
+
+
 @click.command()
 @decorators.build_command
 @decorators.repos_command
@@ -41,7 +44,8 @@ def test(jobs_names, base_dir, context_overrides, build_parameters):
 def _create_temp_jobs(jobs_names, base_dir, jenkins_url, context_overrides):
     ret = []
     for job_name in jobs_names:
-        temp_name = '%s.%s' % (job_name, uuid.uuid4().hex[:8])
+        temp_name = '%s%s.%s' % (job_name, TEMP_JOBS_INFIX,
+                                 uuid.uuid4().hex[:8])
         conf = repository.get_job_conf(base_dir, job_name,
                                        context_overrides=context_overrides)
         _, jenkins_url = jenkins_api.handle_auth(base_dir,
@@ -55,7 +59,9 @@ def _create_temp_jobs(jobs_names, base_dir, jenkins_url, context_overrides):
 
 def _process_results(base_dir, jenkins_url, results):
     for job_name, (build_url, result, runs_urls) in results.items():
-        orig_job_name, _, _ = job_name.rpartition('.')
+        orig_job_name, _, _ = job_name \
+                              .replace(TEMP_JOBS_INFIX, '') \
+                              .rpartition('.')
         if result == 'SUCCESS':
             _, jenkins_url = jenkins_api.handle_auth(base_dir,
                                                      jenkins_api.delete_job,
