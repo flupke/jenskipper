@@ -34,6 +34,7 @@ def test(jobs_names, base_dir, context_overrides, build_parameters):
         build_parameters
     )
     results = build.wait_for_builds(queue_urls, jenkins_url)
+    jenkins_url = _disable_jobs(base_dir, jenkins_url, new_jobs_names)
     jenkins_url = _process_results(base_dir, jenkins_url, results)
 
 
@@ -56,7 +57,10 @@ def _process_results(base_dir, jenkins_url, results):
     for job_name, (build_url, result, runs_urls) in results.items():
         orig_job_name, _, _ = job_name.rpartition('.')
         if result == 'SUCCESS':
-            jenkins_api.delete_job(jenkins_url, job_name)
+            _, jenkins_url = jenkins_api.handle_auth(base_dir,
+                                                     jenkins_api.delete_job,
+                                                     jenkins_url,
+                                                     job_name)
             suffix = ''
         else:
             suffix = ', see %s' % build_url
@@ -64,4 +68,14 @@ def _process_results(base_dir, jenkins_url, results):
                                                orig_job_name, build_url,
                                                result, runs_urls,
                                                suffix=suffix)
+    return jenkins_url
+
+
+def _disable_jobs(base_dir, jenkins_url, jobs_names):
+    for job_name in jobs_names:
+        _, jenkins_url = jenkins_api.handle_auth(base_dir,
+                                                 jenkins_api.toggle_job,
+                                                 jenkins_url,
+                                                 job_name,
+                                                 False)
     return jenkins_url

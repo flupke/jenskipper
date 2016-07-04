@@ -205,3 +205,14 @@ def get_object(jenkins_url, path_or_url):
     resp = requests.get(url)
     resp.raise_for_status()
     return resp.json()
+
+
+def toggle_job(jenkins_url, job_name, enable):
+    '''
+    Enable or disable a job.
+    '''
+    url = urlparse.urljoin(jenkins_url,
+                           '/job/%s/%s' %
+                           (job_name, 'enable' if enable else 'disable'))
+    resp = requests.post(url)
+    resp.raise_for_status()
