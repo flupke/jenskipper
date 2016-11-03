@@ -22,7 +22,9 @@ from .. import exceptions
 @decorators.jobs_command
 @decorators.context_command
 @decorators.handle_all_errors()
-def diff(jobs_names, base_dir, context_overrides):
+@click.option('-r/-f', '--reverse/--no-reverse', help='Revert diff (normal '
+              'order is remote -> local).', default=False)
+def diff(jobs_names, base_dir, context_overrides, reverse):
     '''
     Show diffs between JOBS in the local repository and on the server.
 
@@ -45,7 +47,7 @@ def diff(jobs_names, base_dir, context_overrides):
     for job_name in jobs_names:
         try:
             ret_code |= print_job_diff(base_dir, jenkins_url, job_name,
-                                       context_overrides)
+                                       context_overrides, reverse=reverse)
         except exceptions.JobNotFound:
             utils.sechowrap('')
             utils.sechowrap('Unknown job: %s' % job_name, fg='red', bold=True)
