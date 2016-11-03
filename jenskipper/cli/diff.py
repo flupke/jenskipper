@@ -60,7 +60,7 @@ def diff(jobs_names, base_dir, context_overrides, reverse):
     sys.exit(ret_code)
 
 
-def print_job_diff(base_dir, jenkins_url, job_name, context_overrides,
+def print_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
                    reverse=False):
     '''
     Print the diff between job *job_name* in the repository at *base_dir* and
@@ -71,7 +71,22 @@ def print_job_diff(base_dir, jenkins_url, job_name, context_overrides,
 
     The diff shows what would change if the local job would be pushed to the
     server, unless *reverse* is true.
+
+    Return the number of lines in the diff.
     '''
+    diff = get_job_diff(base_dir, jenkins_url, job_name,
+                        context_overrides=context_overrides, reverse=reverse)
+    _print_diff(diff)
+    return len(diff)
+
+
+def get_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
+                 reverse=False):
+    '''
+    Get the diff lines printed by :func:`print_job_diff`.
+    '''
+    if context_overrides is None:
+        context_overrides = {}
     local_xml = repository.get_job_conf(base_dir, job_name, context_overrides)
     local_xml = _prepare_xml(local_xml)
     remote_xml, _ = jenkins_api.handle_auth(base_dir,
@@ -88,9 +103,7 @@ def print_job_diff(base_dir, jenkins_url, job_name, context_overrides,
         from_file, to_file = to_file, from_file
     diff = difflib.unified_diff(from_text, to_text, fromfile=from_file,
                                 tofile=to_file)
-    diff = list(diff)
-    _print_diff(diff)
-    return max(len(diff), 1)
+    return list(diff)
 
 
 def _prepare_xml(xml):
