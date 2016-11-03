@@ -18,12 +18,12 @@ from .. import exceptions
 
 
 @click.command()
+@click.option('-r/-f', '--reverse/--no-reverse', help='Revert diff (normal '
+              'order is remote -> local).', default=False)
 @decorators.repos_command
 @decorators.jobs_command
 @decorators.context_command
 @decorators.handle_all_errors()
-@click.option('-r/-f', '--reverse/--no-reverse', help='Revert diff (normal '
-              'order is remote -> local).', default=False)
 def diff(jobs_names, base_dir, context_overrides, reverse):
     '''
     Show diffs between JOBS in the local repository and on the server.
