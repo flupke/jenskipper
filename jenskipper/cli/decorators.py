@@ -27,27 +27,33 @@ def repos_command(func):
     return wrapper
 
 
-def jobs_command(func):
+def jobs_command(num_jobs=-1):
     '''
     Base options for jobs that take a list of jobs names.
 
     Expects a *base_dir* argument, so normally used after ``@repos_command``.
     '''
 
-    @click.argument('jobs_names', metavar='JOBS', nargs=-1)
-    @functools.wraps(func)
-    def wrapper(jobs_names, base_dir, **kwargs):
-        jobs_defs = repository.get_jobs_defs(base_dir)
-        if not jobs_names:
-            jobs_names = jobs_defs.keys()
-        unknown_jobs = set(jobs_names).difference(jobs_defs)
-        if unknown_jobs:
-            click.secho('Unknown jobs: %s' % ', '.join(unknown_jobs), fg='red',
-                        bold=True)
-            sys.exit(1)
-        return func(jobs_names=jobs_names, base_dir=base_dir, **kwargs)
+    def decorator(func):
 
-    return wrapper
+        @click.argument('jobs_names', metavar='JOBS', nargs=num_jobs)
+        @functools.wraps(func)
+        def wrapper(jobs_names, base_dir, **kwargs):
+            if num_jobs != -1:
+                jobs_names = [jobs_names]
+            jobs_defs = repository.get_jobs_defs(base_dir)
+            if not jobs_names:
+                jobs_names = jobs_defs.keys()
+            unknown_jobs = set(jobs_names).difference(jobs_defs)
+            if unknown_jobs:
+                click.secho('Unknown jobs: %s' % ', '.join(unknown_jobs),
+                            fg='red', bold=True)
+                sys.exit(1)
+            return func(jobs_names=jobs_names, base_dir=base_dir, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 def handle_conf_errors(func):

@@ -21,7 +21,7 @@ from .. import exceptions
 @click.option('-r/-f', '--reverse/--no-reverse', help='Revert diff (normal '
               'order is remote -> local).', default=False)
 @decorators.repos_command
-@decorators.jobs_command
+@decorators.jobs_command()
 @decorators.context_command
 @decorators.handle_all_errors()
 def diff(jobs_names, base_dir, context_overrides, reverse):

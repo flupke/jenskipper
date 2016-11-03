@@ -15,7 +15,7 @@ TEMP_JOBS_INFIX = '.JK_TEST'
 @click.command()
 @decorators.build_command
 @decorators.repos_command
-@decorators.jobs_command
+@decorators.jobs_command()
 @decorators.context_command
 @decorators.handle_all_errors()
 def test(jobs_names, base_dir, context_overrides, build_parameters):
