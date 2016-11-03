@@ -39,7 +39,7 @@ def jobs_command(num_jobs=-1):
         @click.argument('jobs_names', metavar='JOBS', nargs=num_jobs)
         @functools.wraps(func)
         def wrapper(jobs_names, base_dir, **kwargs):
-            if num_jobs != -1:
+            if num_jobs == 1:
                 jobs_names = [jobs_names]
             jobs_defs = repository.get_jobs_defs(base_dir)
             if not jobs_names:
