@@ -34,9 +34,11 @@ def diff(jobs_names, base_dir, context_overrides, reverse):
 
         0: the repository and the server are in sync
 
-        1: repository and server are not in sync
+        1: a generic error occurred
 
         2: a job is present in the repository but not on the server
+
+        3: repository and server are not in sync
     '''
     if not HAVE_LXML:
         click.secho('This command works better if you install lxml:',
@@ -54,6 +56,7 @@ def diff(jobs_names, base_dir, context_overrides, reverse):
             utils.sechowrap('Job is present in the local repository, but not '
                             'on the Jenkins server.', fg='red')
             sys.exit(2)
+    ret_code = 3 if ret_code != 0 else 0
     sys.exit(ret_code)
 
 

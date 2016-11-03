@@ -11,6 +11,7 @@ from .prune import prune
 from .test import test
 from .sweep import sweep
 from .log import log
+from .patch import patch
 
 
 @click.group()
@@ -31,3 +32,4 @@ main.add_command(prune)
 main.add_command(test)
 main.add_command(sweep)
 main.add_command(log)
+main.add_command(patch)
