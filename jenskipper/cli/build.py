@@ -28,6 +28,10 @@ def build(jobs_names, base_dir, block, build_parameters):
     '''
     Trigger builds for JOBS.
     '''
+    do_build(jobs_names, base_dir, block, build_parameters)
+
+
+def do_build(jobs_names, base_dir, block, build_parameters):
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     queue_urls, jenkins_url = trigger_builds(jobs_names, base_dir, jenkins_url,
                                              build_parameters)

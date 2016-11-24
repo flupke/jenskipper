@@ -4,6 +4,7 @@ import click
 
 from . import decorators
 from . import diff
+from . import build
 from .. import repository
 from .. import jobs
 from .. import jenkins_api
@@ -17,11 +18,17 @@ from .. import exceptions
               'if pushes are disabled in the configuration.')
 @click.option('--allow-overwrite/--no-allow-overwrite', default=False,
               help='Allow overwriting changes made in the GUI.')
+@click.option('-b', '--build', 'trigger_builds', help='Also trigger builds.',
+              is_flag=True)
+@click.option('--block/--no-block', 'block_builds', default=False,
+              help='Block until builds are done and show their outcome.')
 @decorators.repos_command
 @decorators.jobs_command()
 @decorators.context_command
+@decorators.build_command
 @decorators.handle_all_errors()
-def push(jobs_names, base_dir, force, allow_overwrite, context_overrides):
+def push(jobs_names, base_dir, force, allow_overwrite, context_overrides,
+         trigger_builds, block_builds, build_parameters):
     '''
     Push JOBS to the Jenkins server.
 
@@ -55,6 +62,8 @@ def push(jobs_names, base_dir, force, allow_overwrite, context_overrides):
     pushed_jobs = sorted(set(jobs_names).difference(remaining_jobs))
     utils.print_jobs_list('Jobs not pushed:', remaining_jobs, fg='yellow')
     utils.print_jobs_list('Pushed jobs:', pushed_jobs, fg='green')
+    if trigger_builds:
+        build.do_build(jobs_names, base_dir, block_builds, build_parameters)
 
 
 def _check_for_gui_modifications(base_dir, jenkins_url, jobs_names,
