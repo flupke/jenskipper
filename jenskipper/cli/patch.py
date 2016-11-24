@@ -47,5 +47,6 @@ def patch(jobs_names, base_dir, fname):
     patch_stdout, patch_stderr = patch_proc.communicate(''.join(diff_lines))
     if patch_proc.returncode != 0:
         click.secho('Patch failed:', fg='red', bold=True)
+        click.secho(patch_stdout.strip())
         click.secho(patch_stderr.strip())
         sys.exit(1)
