@@ -18,13 +18,18 @@ def render(templates_dir, template, context, context_overrides={}):
     :param context: a dict containing the variables passed to the tamplate
     :param context_overrides:
         a mapping that will be deep merged in the final context
+    :return:
+        a ``(rendered_template, template_files)`` tuple, where
+        ``template_files`` is the set of files that were loaded to render the
+        template
     '''
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir),
+    loader = TrackingFileSystemLoader(templates_dir)
+    env = jinja2.Environment(loader=loader,
                              autoescape=True,
                              undefined=jinja2.StrictUndefined)
     template = env.get_template(template)
     context = utils.deep_merge(context, context_overrides)
-    return template.render(**context)
+    return template.render(**context), loader.loaded_files
 
 
 def extract_jinja_error(exc_info, fnames_prefix=None):
@@ -68,3 +73,22 @@ def print_jinja_error(stack_lines, error):
         click.secho(line)
     click.secho('')
     click.secho(error, fg='red', bold=True)
+
+
+class TrackingFileSystemLoader(jinja2.FileSystemLoader):
+    '''
+    A :class:`jinja2.FileSystemLoader` subclass that keeps track of the files
+    it loads.
+
+    :attr loaded_files: the set of loaded files
+    '''
+
+    def __init__(self, *args, **kwargs):
+        super(TrackingFileSystemLoader, self).__init__(*args, **kwargs)
+        self.loaded_files = set()
+
+    def get_source(self, *args, **kwargs):
+        contents, filename, uptodate = \
+            super(TrackingFileSystemLoader, self).get_source(*args, **kwargs)
+        self.loaded_files.add(filename)
+        return contents, filename, uptodate

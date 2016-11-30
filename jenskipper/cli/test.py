@@ -46,8 +46,8 @@ def _create_temp_jobs(jobs_names, base_dir, jenkins_url, context_overrides):
     for job_name in jobs_names:
         temp_name = '%s%s.%s' % (job_name, TEMP_JOBS_INFIX,
                                  uuid.uuid4().hex[:8])
-        conf = repository.get_job_conf(base_dir, job_name,
-                                       context_overrides=context_overrides)
+        conf, _ = repository.get_job_conf(base_dir, job_name,
+                                          context_overrides=context_overrides)
         _, jenkins_url = jenkins_api.handle_auth(base_dir,
                                                  jenkins_api.push_job_config,
                                                  jenkins_url,

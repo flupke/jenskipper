@@ -95,9 +95,13 @@ def render_job(templates_dir, template, context, pipe_info, insert_hash=False,
         the job description
     :param context_overrides:
         a mapping that will be deep merged in the final context
+    :return:
+        a ``(rendered_job, template_files)`` tuple, where
+        ``template_files`` is the set of files that were loaded to render the
+        job XML
     '''
-    rendered = templates.render(templates_dir, template, context,
-                                context_overrides=context_overrides)
+    rendered, files = templates.render(templates_dir, template, context,
+                                       context_overrides=context_overrides)
     rendered = rendered.strip()
     rendered = rendered.encode('utf8')
     if pipe_info is not None:
@@ -105,7 +109,7 @@ def render_job(templates_dir, template, context, pipe_info, insert_hash=False,
         rendered = merge_pipeline_conf(rendered, parents, link_type)
     if insert_hash:
         rendered = append_hash_in_description(rendered)
-    return rendered
+    return rendered, files
 
 
 def get_conf_hash(conf):

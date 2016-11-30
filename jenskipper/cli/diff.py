@@ -87,7 +87,7 @@ def get_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
     '''
     if context_overrides is None:
         context_overrides = {}
-    local_xml = repository.get_job_conf(base_dir, job_name, context_overrides)
+    local_xml, _ = repository.get_job_conf(base_dir, job_name, context_overrides)
     local_xml = _prepare_xml(local_xml)
     remote_xml, _ = jenkins_api.handle_auth(base_dir,
                                             jenkins_api.get_job_config,

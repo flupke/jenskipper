@@ -106,10 +106,10 @@ def _push_jobs(jobs_names, progress_bar, base_dir, jenkins_url, pipelines,
     for job_name in progress_bar:
         job_def = jobs_defs[job_name]
         pipe_info = pipelines.get(job_name)
-        final_conf = jobs.render_job(templates_dir, job_def['template'],
-                                     job_def['context'], pipe_info,
-                                     insert_hash=True,
-                                     context_overrides=context_overrides)
+        final_conf, _ = jobs.render_job(templates_dir, job_def['template'],
+                                        job_def['context'], pipe_info,
+                                        insert_hash=True,
+                                        context_overrides=context_overrides)
         try:
             _, jenkins_url = jenkins_api.handle_auth(
                 base_dir,

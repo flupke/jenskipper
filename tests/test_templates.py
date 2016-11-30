@@ -6,16 +6,16 @@ from jenskipper import templates
 
 
 def test_render(data_dir):
-    rendered = templates.render(unicode(data_dir), 'template.txt',
-                                {'name': 'John'})
+    rendered, _ = templates.render(unicode(data_dir), 'template.txt',
+                                   {'name': 'John'})
     assert rendered == 'My name is John'
 
 
 def test_render_with_overrides(data_dir):
-    rendered = templates.render(unicode(data_dir),
-                                'template.txt',
-                                {'name': 'John'},
-                                context_overrides={'name': 'Jane'})
+    rendered, _ = templates.render(unicode(data_dir),
+                                   'template.txt',
+                                   {'name': 'John'},
+                                   context_overrides={'name': 'Jane'})
     assert rendered == 'My name is Jane'
 
 
@@ -60,3 +60,14 @@ def test_extract_jinja_error_with_fnames_prefix(data_dir):
         '    My name is {{ name }}',
     ]
     assert error == "Undefined variable: 'name' is undefined"
+
+
+def test_track_includes(data_dir):
+    rendered, loaded_files = templates.render(unicode(data_dir),
+                                              'template_with_include.txt',
+                                              {'name': 'Jane'})
+    assert rendered == 'My name is Jane'
+    assert loaded_files == {
+        data_dir.join('template_with_include.txt'),
+        data_dir.join('template.txt')
+    }
