@@ -21,7 +21,7 @@ from .. import exceptions
 @click.option('-r/-f', '--reverse/--no-reverse', help='Revert diff (normal '
               'order is remote -> local).', default=False)
 @decorators.repos_command
-@decorators.jobs_command()
+@decorators.jobs_command(dirty_flag=True)
 @decorators.context_command
 @decorators.handle_all_errors()
 def diff(jobs_names, base_dir, context_overrides, reverse):
@@ -87,7 +87,8 @@ def get_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
     '''
     if context_overrides is None:
         context_overrides = {}
-    local_xml, _ = repository.get_job_conf(base_dir, job_name, context_overrides)
+    local_xml, _ = repository.get_job_conf(base_dir, job_name,
+                                           context_overrides)
     local_xml = _prepare_xml(local_xml)
     remote_xml, _ = jenkins_api.handle_auth(base_dir,
                                             jenkins_api.get_job_config,

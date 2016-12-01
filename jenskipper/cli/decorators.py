@@ -27,11 +27,18 @@ def repos_command(func):
     return wrapper
 
 
-def jobs_command(num_jobs=-1):
+def jobs_command(num_jobs=-1, dirty_flag=False):
     '''
     Base options for jobs that take a list of jobs names.
 
     Expects a *base_dir* argument, so normally used after ``@repos_command``.
+
+    Number of jobs accepted in argument can be controlled with *num_jobs*. If
+    *num_jobs* is -1 and no job is passed on the command line, it means the
+    command acts on all jobs.
+
+    *dirty_flag* controls the inclusion of the ``--dirty`` flag, to restrain
+    action to modified jobs (from the CVS standpoint).
     '''
 
     def decorator(func):
@@ -39,6 +46,8 @@ def jobs_command(num_jobs=-1):
         @click.argument('jobs_names', metavar='JOBS', nargs=num_jobs)
         @functools.wraps(func)
         def wrapper(jobs_names, base_dir, **kwargs):
+            # Check jobs passed on the command line, default to all jobs if
+            # none was passed
             if num_jobs == 1:
                 jobs_names = [jobs_names]
             jobs_defs = repository.get_jobs_defs(base_dir)
@@ -49,7 +58,19 @@ def jobs_command(num_jobs=-1):
                 click.secho('Unknown jobs: %s' % ', '.join(unknown_jobs),
                             fg='red', bold=True)
                 sys.exit(1)
+
+            # Filter by dirty jobs
+            if dirty_flag and kwargs['use_dirty_jobs']:
+                from . import dirty
+                del kwargs['use_dirty_jobs']
+                jobs_names = dirty.get_dirty_jobs(base_dir, jobs_names)
+
             return func(jobs_names=jobs_names, base_dir=base_dir, **kwargs)
+
+        if dirty_flag:
+            wrapper = click.option('--dirty', '-d', 'use_dirty_jobs',
+                                   is_flag=True, help='Only act on dirty '
+                                   'jobs (from the CVS standpoint).')(wrapper)
 
         return wrapper
 

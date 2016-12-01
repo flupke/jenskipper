@@ -23,7 +23,7 @@ from .. import exceptions
 @click.option('--block/--no-block', 'block_builds', default=False,
               help='Block until builds are done and show their outcome.')
 @decorators.repos_command
-@decorators.jobs_command()
+@decorators.jobs_command(dirty_flag=True)
 @decorators.context_command
 @decorators.build_command
 @decorators.handle_all_errors()

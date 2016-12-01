@@ -13,7 +13,7 @@ from .. import utils
 @click.option('--all', '-a', 'show_all', is_flag=True,
               help='Show all logs (default is to show only failures).')
 @decorators.repos_command
-@decorators.jobs_command()
+@decorators.jobs_command(dirty_flag=True)
 @decorators.handle_all_errors()
 def log(jobs_names, base_dir, build_number, show_all):
     '''
