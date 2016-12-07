@@ -62,8 +62,8 @@ def jobs_command(num_jobs=-1, dirty_flag=False):
             # Filter by dirty jobs
             if dirty_flag and kwargs['use_dirty_jobs']:
                 from . import dirty
-                del kwargs['use_dirty_jobs']
                 jobs_names = dirty.get_dirty_jobs(base_dir, jobs_names)
+            kwargs.pop('use_dirty_jobs', None)
 
             return func(jobs_names=jobs_names, base_dir=base_dir, **kwargs)
 
