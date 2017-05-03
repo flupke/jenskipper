@@ -12,13 +12,17 @@ from .. import utils
 
 
 @click.command('fetch-new')
+@click.argument('selected_jobs', nargs=-1, metavar='JOBS')
 @click.option('--force/--no-force', default=False, help='Allow overwriting '
               'existing files.')
 @decorators.repos_command
 @decorators.handle_all_errors()
-def fetch_new(base_dir, force):
+def fetch_new(base_dir, force, selected_jobs):
     '''
     Fetch new jobs in an existing repository.
+
+    You can specify which jobs to fetch with JOBS. If no JOBS are specified,
+    fetch all new jobs.
     '''
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     repos_jobs = repository.get_jobs_defs(base_dir)
@@ -26,6 +30,12 @@ def fetch_new(base_dir, force):
                                                        jenkins_api.list_jobs,
                                                        jenkins_url)
     new_jobs = set(server_jobs).difference(repos_jobs)
+    if selected_jobs:
+        unknown_jobs = set(selected_jobs).difference(new_jobs)
+        if unknown_jobs:
+            click.secho('Unknown jobs: %s' % ', '.join(unknown_jobs))
+            sys.exit(2)
+        new_jobs = new_jobs.intersection(selected_jobs)
     if new_jobs:
         try:
             with click.progressbar(new_jobs, label='Fetching new jobs') as bar:
