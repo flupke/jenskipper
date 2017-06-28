@@ -29,8 +29,8 @@ def get_dirty_jobs(base_dir, jobs_names=None):
     default is to examine all jobs.
     '''
     # Get the list of dirty files in the repository
-    cvs = _get_cvs(base_dir)
-    if cvs == 'git':
+    vcs = _get_vcs(base_dir)
+    if vcs == 'git':
         dirty_files = _get_git_dirty_files(base_dir)
     else:
         click.secho('Unkown control version system', fg='red', bold=True)
@@ -53,7 +53,7 @@ def get_dirty_jobs(base_dir, jobs_names=None):
                   (files_jobs[fname] for fname in dirty_files))
 
 
-def _get_cvs(base_dir):
+def _get_vcs(base_dir):
     if '.git' in os.listdir(base_dir):
         return 'git'
 

@@ -38,7 +38,7 @@ def jobs_command(num_jobs=-1, dirty_flag=False):
     command acts on all jobs.
 
     *dirty_flag* controls the inclusion of the ``--dirty`` flag, to restrain
-    action to modified jobs (from the CVS standpoint).
+    action to modified jobs (from the VCS standpoint).
     '''
 
     def decorator(func):
@@ -70,7 +70,7 @@ def jobs_command(num_jobs=-1, dirty_flag=False):
         if dirty_flag:
             wrapper = click.option('--dirty', '-d', 'use_dirty_jobs',
                                    is_flag=True, help='Only act on dirty '
-                                   'jobs (from the CVS standpoint).')(wrapper)
+                                   'jobs (from the VCS standpoint).')(wrapper)
 
         return wrapper
 
