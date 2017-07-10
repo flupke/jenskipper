@@ -37,6 +37,7 @@ def get_artifact(base_dir, job_name, artifact, build, node_name, output_file):
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     real_build, jenkins_url = _resolve_build(base_dir, jenkins_url, job_name,
                                              build)
+    print >> sys.stderr, 'Build number: %s' % real_build
     response, jenkins_url = jenkins_api.handle_auth(
         base_dir,
         jenkins_api.get_artifact,
