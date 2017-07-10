@@ -51,7 +51,7 @@ def get_artifact(base_dir, job_name, artifact, build, node_name, output_file):
         response.raise_for_status()
     except requests.HTTPError:
         if response.status_code == 404:
-            utils.sechowrap('Job or build not found', fg='red')
+            utils.sechowrap('Job, build or artifact not found', fg='red')
         else:
             utils.sechowrap('Unexpected HTTP error %s while trying to '
                             'retrieve artifact' % response.status_code,
