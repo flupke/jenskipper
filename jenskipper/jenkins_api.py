@@ -216,3 +216,17 @@ def toggle_job(jenkins_url, job_name, enable):
                            (job_name, 'enable' if enable else 'disable'))
     resp = requests.post(url)
     resp.raise_for_status()
+
+
+def get_artifact(jenkins_url, job_name, build, artifact_name, node_name):
+    '''
+    Get a build artifact.
+
+    Return a :class:`requests.Response` object.
+    '''
+    path = '/job/%s/%s' % (job_name, build)
+    if node_name is not None:
+        path += '/nodes=%s' % node_name
+    path += '/artifact/%s' % artifact_name
+    url = urlparse.urljoin(jenkins_url, path)
+    return requests.get(url, stream=True)

@@ -13,6 +13,7 @@ from .sweep import sweep
 from .log import log
 from .patch import patch
 from .dirty import print_dirty_jobs
+from .get_artifact import get_artifact
 
 
 @click.group()
@@ -35,3 +36,4 @@ main.add_command(sweep)
 main.add_command(log)
 main.add_command(patch)
 main.add_command(print_dirty_jobs)
+main.add_command(get_artifact)
