@@ -50,7 +50,8 @@ def get_dirty_jobs(base_dir, jobs_names=None):
 
     # Show dirty jobs
     return reduce(set.union,
-                  (files_jobs[fname] for fname in dirty_files))
+                  (files_jobs[fname] for fname in dirty_files),
+                  set())
 
 
 def _get_vcs(base_dir):
