@@ -29,6 +29,7 @@ setup(
         'pyyaml',
         'jinja2',
         'configobj',
+        'coloredlogs',
     ],
     extras_require={
         'dev': [

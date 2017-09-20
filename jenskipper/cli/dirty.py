@@ -3,11 +3,15 @@ import os
 import os.path as op
 import subprocess
 import collections
+import logging
 
 import click
 
 from . import decorators
 from .. import repository
+
+
+logger = logging.getLogger(__name__)
 
 
 @click.command('dirty')
@@ -44,6 +48,7 @@ def get_dirty_jobs(base_dir, jobs_names=None):
         examined_jobs = jobs_defs.keys()
     files_jobs = collections.defaultdict(set)
     for job_name in examined_jobs:
+        logger.debug('looking at: %s', job_name)
         _, job_files = repository.get_job_conf(base_dir, job_name)
         for fname in job_files:
             files_jobs[fname].add(job_name)
