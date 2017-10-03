@@ -51,6 +51,8 @@ def get_job_status(base_dir, job_name):
             last_jobs_lines.append(fmt % build_data['number'])
             if last_completed_build == job_data[key]['number']:
                 print 'Status: %s' % status
+        else:
+            last_jobs_lines.append(fmt % 'none')
 
     print 'Last completed: %s' % last_completed_build
     print '\n'.join(last_jobs_lines)
