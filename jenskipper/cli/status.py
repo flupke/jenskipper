@@ -38,21 +38,26 @@ def get_job_status(base_dir, job_name):
                             fg='red')
         sys.exit(1)
 
-    if job_data['lastCompletedBuild'] is None:
-        print 'Job was never built'
+    status = _job_status(job_data)
+    print 'Status: %s' % status
+    if status is 'never built':
         sys.exit(0)
 
-    last_completed_build = job_data['lastCompletedBuild']['number']
-
-    last_jobs_lines = []
-    for key, fmt, status in JOB_STATUS:
+    print 'Last completed: %s' % job_data['lastCompletedBuild']['number']
+    for key, fmt, _ in JOB_STATUS:
         build_data = job_data[key]
         if build_data is not None:
-            last_jobs_lines.append(fmt % build_data['number'])
-            if last_completed_build == job_data[key]['number']:
-                print 'Status: %s' % status
+            print fmt % build_data['number']
         else:
-            last_jobs_lines.append(fmt % 'none')
+            print fmt % 'none'
 
-    print 'Last completed: %s' % last_completed_build
-    print '\n'.join(last_jobs_lines)
+
+def _job_status(job_data):
+    if job_data['lastCompletedBuild'] is None:
+        return 'never built'
+    last_completed = job_data['lastCompletedBuild']['number']
+    for key, _, status in JOB_STATUS:
+        build_data = job_data[key]
+        if build_data is not None and build_data['number'] == last_completed:
+            return status
+    return 'unknown'
