@@ -16,14 +16,26 @@ JOB_STATUS = (
 
 
 @click.command('status')
-@click.argument('job_name')
+@click.option('--status-only', '-s', is_flag=True,
+              help='Only show job names and statuses.')
 @decorators.repos_command
+@decorators.jobs_command()
 @decorators.handle_all_errors()
-def get_job_status(base_dir, job_name):
+def get_job_status(base_dir, jobs_names, status_only):
     """
     Retrieve the status of a job.
     """
     jenkins_url = conf.get(base_dir, ['server', 'location'])
+    show_job_name = (len(jobs_names) > 1)
+    for job_num, job_name in enumerate(jobs_names):
+        if job_num and not status_only:
+            print
+        jenkins_url = _print_job_status(base_dir, jenkins_url, job_name,
+                                        status_only, show_job_name)
+
+
+def _print_job_status(base_dir, jenkins_url, job_name, status_only,
+                      show_job_name):
     try:
         job_data, jenkins_url = jenkins_api.handle_auth(base_dir,
                                                         jenkins_api.get_object,
@@ -39,17 +51,31 @@ def get_job_status(base_dir, job_name):
         sys.exit(1)
 
     status = _job_status(job_data)
-    print 'Status: %s' % status
-    if status is 'never built':
-        sys.exit(0)
-
-    print 'Last completed: %s' % job_data['lastCompletedBuild']['number']
-    for key, fmt, _ in JOB_STATUS:
-        build_data = job_data[key]
-        if build_data is not None:
-            print fmt % build_data['number']
+    if status_only:
+        print "%s: %s" % (job_name, status)
+    else:
+        if show_job_name:
+            lines_prefix = '  '
+            click.secho(job_name, fg='yellow', bold=True)
         else:
-            print fmt % 'none'
+            lines_prefix = ''
+        print '%sStatus: %s' % (lines_prefix, status)
+        if status is 'never built':
+            sys.exit(0)
+
+        print '%sLast completed: %s' % (
+            lines_prefix,
+            job_data['lastCompletedBuild']['number']
+        )
+        for key, fmt, _ in JOB_STATUS:
+            build_data = job_data[key]
+            if build_data is not None:
+                job_number = build_data['number']
+            else:
+                job_number = 'none'
+            print lines_prefix + fmt % job_number
+
+    return jenkins_url
 
 
 def _job_status(job_data):
