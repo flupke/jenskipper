@@ -17,7 +17,7 @@ def repos_command(func):
     Base options for repository commands.
     '''
 
-    @click.option('--jk-dir', '-d', default='.', help='Location of the '
+    @click.option('--jk-dir', '-D', default='.', help='Location of the '
                   'jenskipper repository (default: the current directory).')
     @functools.wraps(func)
     def wrapper(jk_dir, **kwargs):
