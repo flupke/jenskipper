@@ -18,13 +18,15 @@ from .. import exceptions
 
 
 @click.command()
-@click.option('-r/-f', '--reverse/--no-reverse', help='Revert diff (normal '
-              'order is remote -> local).', default=False)
+@click.option('-r/-f', '--reverse/--no-reverse', help='Show reverse diffs '
+              '(default order is remote -> local).', default=False)
+@click.option('--names-only', '-s', is_flag=True, help='Only show names '
+              'of jobs that have a diff.')
 @decorators.repos_command
 @decorators.jobs_command(dirty_flag=True)
 @decorators.context_command
 @decorators.handle_all_errors()
-def diff(jobs_names, base_dir, context_overrides, reverse):
+def diff(jobs_names, base_dir, context_overrides, reverse, names_only):
     '''
     Show diffs between JOBS in the local repository and on the server.
 
@@ -49,7 +51,8 @@ def diff(jobs_names, base_dir, context_overrides, reverse):
     for job_name in jobs_names:
         try:
             ret_code |= print_job_diff(base_dir, jenkins_url, job_name,
-                                       context_overrides, reverse=reverse)
+                                       context_overrides, reverse=reverse,
+                                       names_only=names_only)
         except exceptions.JobNotFound:
             utils.sechowrap('')
             utils.sechowrap('Unknown job: %s' % job_name, fg='red', bold=True)
@@ -61,7 +64,7 @@ def diff(jobs_names, base_dir, context_overrides, reverse):
 
 
 def print_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
-                   reverse=False):
+                   reverse=False, names_only=False):
     '''
     Print the diff between job *job_name* in the repository at *base_dir* and
     the server at *jenkins_url*.
@@ -76,7 +79,11 @@ def print_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
     '''
     diff = get_job_diff(base_dir, jenkins_url, job_name,
                         context_overrides=context_overrides, reverse=reverse)
-    _print_diff(diff)
+    if names_only:
+        if diff:
+            print job_name
+    else:
+        _print_diff(diff)
     return len(diff)
 
 
