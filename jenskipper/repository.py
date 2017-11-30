@@ -52,6 +52,10 @@ def get_jobs_defs_fname(base_dir):
     return op.join(base_dir, 'jobs.yaml')
 
 
+def _get_extra_jobs_defs_fname(base_dir):
+    return op.join(base_dir, 'extra-jobs.yaml')
+
+
 def parse_jobs_defs(fp, default_contexts):
     jobs_defs = yaml.safe_load(fp)
     return {k: _normalize_job_def(v, default_contexts)
@@ -77,10 +81,18 @@ def get_jobs_defs(base_dir):
     Return a dict indexed by job name containing jobs properties (template,
     context, etc...).
     '''
-    fname = get_jobs_defs_fname(base_dir)
     default_contexts = get_default_contexts(base_dir)
-    with open(fname) as fp:
-        return parse_jobs_defs(fp, default_contexts)
+    jobs_fname = get_jobs_defs_fname(base_dir)
+    with open(jobs_fname) as fp:
+        jobs_defs = parse_jobs_defs(fp, default_contexts)
+    extra_jobs_fname = _get_extra_jobs_defs_fname(base_dir)
+    if op.exists(extra_jobs_fname):
+        with open(extra_jobs_fname) as fp:
+            extra_jobs_defs = parse_jobs_defs(fp, default_contexts)
+    else:
+        extra_jobs_defs = {}
+    jobs_defs.update(extra_jobs_defs)
+    return jobs_defs
 
 
 def get_default_contexts_fname(base_dir):
