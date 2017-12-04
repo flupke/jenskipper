@@ -43,7 +43,7 @@ def _print_job_status(base_dir, jenkins_url, job_name, status_only,
                                                         '/job/%s' % job_name)
     except requests.HTTPError as exc:
         if exc.response.status_code == 404:
-            utils.sechowrap('Unkown job: %s' % job_name)
+            utils.sechowrap('Job not found on Jenkins server: %s' % job_name)
             exit_code = 2
         else:
             utils.sechowrap('Unexpected HTTP error %s while trying to '

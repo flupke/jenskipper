@@ -55,9 +55,9 @@ def jobs_command(num_jobs=-1, dirty_flag=False):
                 jobs_names = jobs_defs.keys()
             unknown_jobs = set(jobs_names).difference(jobs_defs)
             if unknown_jobs:
-                click.secho('Unknown jobs: %s' % ', '.join(unknown_jobs),
-                            fg='red', bold=True)
-                sys.exit(1)
+                click.secho('Job(s) not found in repository: %s' %
+                            ', '.join(unknown_jobs), fg='red', bold=True)
+                sys.exit(4)
 
             # Filter by dirty jobs
             if dirty_flag and kwargs['use_dirty_jobs']:
