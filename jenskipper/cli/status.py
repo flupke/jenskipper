@@ -44,11 +44,13 @@ def _print_job_status(base_dir, jenkins_url, job_name, status_only,
     except requests.HTTPError as exc:
         if exc.response.status_code == 404:
             utils.sechowrap('Unkown job: %s' % job_name)
+            exit_code = 2
         else:
             utils.sechowrap('Unexpected HTTP error %s while trying to '
                             'retrieve job data' % exc.response.status_code,
                             fg='red')
-        sys.exit(1)
+            exit_code = 1
+        sys.exit(exit_code)
 
     status = _job_status(job_data)
     if status_only:
