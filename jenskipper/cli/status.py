@@ -19,7 +19,7 @@ JOB_STATUS = (
 @click.option('--status-only', '-s', is_flag=True,
               help='Only show job names and statuses.')
 @decorators.repos_command
-@decorators.jobs_command()
+@decorators.jobs_command(allow_unknown=True)
 @decorators.handle_all_errors()
 def get_job_status(base_dir, jobs_names, status_only):
     """
