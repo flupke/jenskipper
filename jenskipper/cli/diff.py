@@ -101,12 +101,14 @@ def get_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
         context_overrides = {}
     local_xml, _ = repository.get_job_conf(base_dir, job_name,
                                            context_overrides)
-    local_xml = _prepare_xml(local_xml)
+    with utils.add_lxml_syntax_error_context(local_xml, job_name):
+        local_xml = _prepare_xml(local_xml)
     remote_xml, _ = jenkins_api.handle_auth(base_dir,
                                             jenkins_api.get_job_config,
                                             jenkins_url,
                                             job_name)
-    remote_xml = _prepare_xml(remote_xml)
+    with utils.add_lxml_syntax_error_context(remote_xml, job_name):
+        remote_xml = _prepare_xml(remote_xml)
     from_text = remote_xml
     to_text = local_xml
     from_file = 'remote/%s.xml' % job_name

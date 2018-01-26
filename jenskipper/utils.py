@@ -2,6 +2,7 @@ from xml.etree import ElementTree
 import urlparse
 import copy
 import collections
+import contextlib
 
 import click
 
@@ -136,6 +137,92 @@ def flatten_dict(dct):
     '''
     items = _flatten_dict(dct, ())
     return dict(items)
+
+
+@contextlib.contextmanager
+def add_lxml_syntax_error_context(full_xml, context):
+    '''
+    Augment :class:`lxml.etree.XMLSyntaxError` exceptions for
+    :func:`format_lxml_syntax_error`.
+
+    Usage::
+
+        with add_lxml_syntax_error_context(full_xml, 'somefile.xml'):
+            a_function_that_raises_XMLSyntaxError(full_xml)
+
+    '''
+    if HAVE_LXML:
+        try:
+            yield
+        except etree.XMLSyntaxError as exc:
+            exc.full_xml = full_xml
+            exc.context = context
+            raise
+    else:
+        yield
+
+
+def format_lxml_syntax_error(exc, context_lines=5, full_xml=False):
+    '''
+    Format a :class:`lxml.etree.XMLSyntaxError`, showing the error's
+    context_lines.
+
+    *exc* should have been augmented with :func:`add_lxml_syntax_error_context`
+    first.
+
+    *name* is just a generic name indicating where the error occurred (for
+    example the name of a job).
+
+    *context_lines* is the number of lines to show around the error. If
+    *full_xml* is true, show the entire XML.
+    '''
+    lines = exc.full_xml.splitlines()
+    err_line = exc.lineno - 1
+    err_offset = exc.offset - 1
+    if full_xml:
+        start_line = 0
+        end_line = None
+    else:
+        start_line = err_line - context_lines
+        end_line = err_line + context_lines
+    before_context = lines[start_line:err_line]
+    error_line = lines[err_line]
+    after_context = lines[err_line + 1:end_line]
+    lines = [
+        'XML syntax error in %s:' % click.style(exc.context, bold=True),
+        '',
+        click.style(exc.message, bold=True),
+        '',
+    ]
+
+    # Get the error context lines
+    xml_lines = []
+    xml_lines += before_context
+    xml_lines.append(
+        click.style(error_line[:err_offset], fg='red') +
+        click.style(error_line[err_offset], fg='red', bold=True) +
+        click.style(error_line[err_offset + 1:], fg='red')
+    )
+    xml_lines_error_index = len(xml_lines)
+    xml_lines += after_context
+
+    # Add line numbers gutter
+    gutter_width = len('%s' % (len(xml_lines) + start_line + 1))
+    gutter_fmt = '%%%si' % gutter_width
+    margin_width = 2
+    xml_lines = [
+        click.style(gutter_fmt % (i + start_line + 1),
+                    fg='black', bold=True) +
+        ' ' * margin_width + l
+        for i, l in enumerate(xml_lines)
+    ]
+
+    # Add error marker
+    xml_lines.insert(xml_lines_error_index,
+                     ' ' * (err_offset + margin_width + gutter_width) + '^')
+
+    lines += xml_lines
+    return '\n'.join(lines)
 
 
 def _flatten_dict(dct, ancestors=()):

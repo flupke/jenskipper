@@ -5,6 +5,12 @@ import click
 import jinja2.exceptions
 import yaml.error
 
+try:
+    from lxml import etree
+    HAVE_LXML = True
+except ImportError:
+    HAVE_LXML = False
+
 from .. import repository
 from .. import conf
 from .. import exceptions
@@ -234,6 +240,35 @@ def handle_yaml_errors(func):
     return wrapper
 
 
+def handle_lxml_syntax_errors():
+    '''
+    Prints nice error messages on :class:`lxml.etree.XMLSyntaxError`.
+    '''
+
+    def decorator(func):
+        if HAVE_LXML:
+
+            @click.option('--full-xml/--no-full-xml', default=False,
+                          help='Display full XML in XML syntax errors.')
+            @functools.wraps(func)
+            def wrapper(full_xml, **kwargs):
+                try:
+                    return func(**kwargs)
+                except etree.XMLSyntaxError as exc:
+                    click.echo(utils.format_lxml_syntax_error(
+                        exc, full_xml=full_xml
+                    ), err=True)
+                    sys.exit(1)
+
+        else:
+
+            wrapper = func
+
+        return wrapper
+
+    return decorator
+
+
 def handle_all_errors(for_repos_command=True):
     '''
     Return a decorator that regroups all the error handling decorators.
@@ -248,6 +283,7 @@ def handle_all_errors(for_repos_command=True):
             @handle_conf_errors
             @handle_jinja_errors
             @handle_yaml_errors
+            @handle_lxml_syntax_errors()
             @functools.wraps(func)
             def wrapper(**kwargs):
                 return func(**kwargs)
@@ -256,6 +292,7 @@ def handle_all_errors(for_repos_command=True):
 
             @handle_conf_errors
             @handle_yaml_errors
+            @handle_lxml_syntax_errors()
             @functools.wraps(func)
             def wrapper(**kwargs):
                 return func(**kwargs)
