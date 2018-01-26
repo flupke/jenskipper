@@ -1,5 +1,6 @@
 import difflib
 import sys
+import logging
 
 try:
     from lxml import etree  # NOQA
@@ -15,6 +16,9 @@ from .. import jenkins_api
 from .. import conf
 from .. import jobs
 from .. import exceptions
+
+
+logger = logging.getLogger(__name__)
 
 
 @click.command()
@@ -92,6 +96,7 @@ def get_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
     '''
     Get the diff lines printed by :func:`print_job_diff`.
     '''
+    logger.debug('diffing %s', job_name)
     if context_overrides is None:
         context_overrides = {}
     local_xml, _ = repository.get_job_conf(base_dir, job_name,
