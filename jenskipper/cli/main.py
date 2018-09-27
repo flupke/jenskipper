@@ -17,6 +17,7 @@ from .dirty import print_dirty_jobs
 from .get_artifact import get_artifact
 from .status import get_job_status
 from .auth import authenticate
+from .delete import delete
 
 
 @click.group()
@@ -48,3 +49,4 @@ main.add_command(print_dirty_jobs)
 main.add_command(get_artifact)
 main.add_command(get_job_status)
 main.add_command(authenticate)
+main.add_command(delete)

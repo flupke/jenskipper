@@ -33,7 +33,8 @@ def repos_command(func):
     return wrapper
 
 
-def jobs_command(num_jobs=-1, dirty_flag=False, allow_unknown=False):
+def jobs_command(num_jobs=-1, dirty_flag=False, allow_unknown=False,
+                 default_to_all=True):
     '''
     Base options for jobs that take a list of jobs names.
 
@@ -48,6 +49,9 @@ def jobs_command(num_jobs=-1, dirty_flag=False, allow_unknown=False):
 
     If *allow_unknown* is true, don't check the jobs actually exist in the
     repository.
+
+    *default_to_all* controls whether passing no jobs on the command line means
+    all jobs or not.
     '''
     if dirty_flag and allow_unknown:
         raise ValueError('cannot use dirty_flag and allow_unknown together')
@@ -57,14 +61,15 @@ def jobs_command(num_jobs=-1, dirty_flag=False, allow_unknown=False):
         @click.argument('jobs_names', metavar='JOBS', nargs=num_jobs)
         @functools.wraps(func)
         def wrapper(jobs_names, base_dir, **kwargs):
-            # Check jobs passed on the command line, default to all jobs if
-            # none was passed
             if num_jobs == 1:
                 jobs_names = [jobs_names]
             if not allow_unknown:
                 jobs_defs = repository.get_jobs_defs(base_dir)
                 if not jobs_names:
-                    jobs_names = jobs_defs.keys()
+                    if default_to_all:
+                        jobs_names = jobs_defs.keys()
+                    else:
+                        jobs_names = []
                 unknown_jobs = set(jobs_names).difference(jobs_defs)
                 if unknown_jobs:
                     click.secho('Job(s) not found in repository: %s' %
