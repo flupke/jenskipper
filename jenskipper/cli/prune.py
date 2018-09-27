@@ -8,8 +8,9 @@ from .. import conf
 
 
 @click.command()
-@click.option('--confirm/--no-confirm', default=True, help='Do not confirm '
-              'jobs deletion.')
+@click.option('--confirm/--no-confirm', default=True, help='Ask '
+              'for confirmation before deleting jobs (default is '
+              'to ask).')
 @decorators.repos_command
 @decorators.handle_all_errors()
 def prune(base_dir, confirm):
