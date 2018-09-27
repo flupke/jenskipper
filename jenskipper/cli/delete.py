@@ -21,9 +21,9 @@ RESULT_COLORS = {
 @decorators.jobs_command(dirty_flag=True, default_to_all=False)
 @decorators.handle_all_errors()
 def delete(jobs_names, base_dir, confirm):
-    '''
+    """
     Delete jobs on the Jenkins server.
-    '''
+    """
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     if confirm and jobs_names:
         question = click.style(click.wrap_text(

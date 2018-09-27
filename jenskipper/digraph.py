@@ -7,12 +7,12 @@ from .exceptions import CyclicDependency
 
 
 def split_connected_graphs(graph):
-    '''
+    """
     Separate unconnected graphs in *graph* from each other.
 
     Return a list of :class:`DirectedGraph` objects that are garanteed to
     contain only connected components.
-    '''
+    """
     graph = graph.copy()
     ret = []
     while graph.nodes:
@@ -27,14 +27,14 @@ def split_connected_graphs(graph):
 
 
 def topo_sort(graph):
-    '''
+    """
     Make a topological sort on *graph*.
 
     Return sorted node names.
 
     Raise :class:`~bundle.exceptions.CyclicDependency` if one or more cyclic
     dependencies are found.
-    '''
+    """
     graph = graph.copy()
 
     stack = graph.roots()
@@ -105,25 +105,25 @@ class DirectedGraph(object):
         return copy.deepcopy(self)
 
     def roots(self):
-        '''
+        """
         Return the list of nodes that have no parents.
-        '''
+        """
         return [n for n in self.nodes.values() if not self.parents[n]]
 
     def gc(self):
-        '''
+        """
         Delete all detached nodes.
-        '''
+        """
         for name in self.nodes.keys():
             if not self.children[name] and not self.parents[name]:
                 del self.nodes[name]
 
     def walk_edges_from(self, node):
-        '''
+        """
         An iterator traversing the whole graph, starting from *node*.
 
         Yields ``(parent, child)`` node pairs.
-        '''
+        """
         stack = [node]
         visited = set()
         while stack:
@@ -138,9 +138,9 @@ class DirectedGraph(object):
                         stack.append(conn_node)
 
     def format(self):
-        '''
+        """
         Render this graph in text form.
-        '''
+        """
         lines = []
         visited = set()
         for node in sorted(self.roots()):
@@ -170,9 +170,9 @@ class DirectedGraph(object):
 
     @classmethod
     def parse(cls, text):
-        '''
+        """
         Parse the directed graph described in *text*.
-        '''
+        """
         graph = cls()
         for line_num, line in enumerate(text.splitlines()):
             line_num += 1
@@ -192,12 +192,12 @@ class DirectedGraph(object):
 
 
 class Node(object):
-    '''
+    """
     A node of a :class:`DirectedGraph`.
 
     It has the property of being interchangeable with its *name* when used as
     dict keys.
-    '''
+    """
 
     def __init__(self, name):
         if isinstance(name, Node):

@@ -13,9 +13,9 @@ from .. import repository
 @decorators.repos_command
 @decorators.handle_all_errors()
 def sweep(base_dir, delete):
-    '''
+    """
     Find unused templates in the current repository.
-    '''
+    """
     # Get dead templates list and print it
     jobs_defs = repository.get_jobs_defs(base_dir)
     defs_templates = set(d['template'] for d in jobs_defs.values())

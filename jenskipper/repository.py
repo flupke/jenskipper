@@ -13,7 +13,7 @@ CONF_FNAME = '.jenskipper.conf'
 
 
 def search_base_dir(from_dir='.', up_to_dir='/'):
-    '''
+    """
     Search the base dir of a jenskipper repository.
 
     The search starts at *from_dir* and continues in parent directories, up to
@@ -21,7 +21,7 @@ def search_base_dir(from_dir='.', up_to_dir='/'):
     found.
 
     Return the base directory of the repository, or None.
-    '''
+    """
     cur_dir = op.abspath(from_dir)
     while cur_dir != up_to_dir:
         if CONF_FNAME in os.listdir(cur_dir):
@@ -30,12 +30,12 @@ def search_base_dir(from_dir='.', up_to_dir='/'):
 
 
 def check_dir_is_in_repository(from_dir, retcode=1):
-    '''
+    """
     Check if *from_dir* does belong to a jenskipper repository.
 
     If it doesn't, print an error message and exit program with *retcode*. If
     it does, return the base directory of the repository.
-    '''
+    """
     base_dir = search_base_dir(from_dir)
     if base_dir is None:
         click.secho('Could not find a jenskipper repository in "%s" and its '
@@ -75,12 +75,12 @@ def _normalize_job_def(job_def, default_contexts):
 
 
 def get_jobs_defs(base_dir):
-    '''
+    """
     Get the jobs definitons for the repository in *base_dir*.
 
     Return a dict indexed by job name containing jobs properties (template,
     context, etc...).
-    '''
+    """
     default_contexts = get_default_contexts(base_dir)
     jobs_fname = get_jobs_defs_fname(base_dir)
     with open(jobs_fname) as fp:

@@ -10,12 +10,12 @@ JENKINS_LINK_TYPES = {v.strip(): k for k, v in GRAPH_EDGES_REPRS.items()}
 
 
 def format_pipes_bits(bits):
-    '''
+    """
     Assemble *bits* of pipelines as text.
 
     *bits* must be a dict of ``(parents_list, upstream_link_type)`` pairs,
     indexed by job name.
-    '''
+    """
     graph = digraph.DirectedGraph()
     for child, (parents, upstream_link_type) in bits.items():
         edges_repr = GRAPH_EDGES_REPRS[upstream_link_type]
@@ -25,9 +25,9 @@ def format_pipes_bits(bits):
 
 
 def parse_pipelines(text):
-    '''
+    """
     Parse the pipelines defined in *text*.
-    '''
+    """
     graph = digraph.DirectedGraph.parse(text)
     ret = {}
     for child, parents in graph.parents.items():

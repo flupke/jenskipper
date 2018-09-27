@@ -26,9 +26,9 @@ LINK_ELTS = {
 
 
 def extract_pipeline_conf(conf):
-    '''
+    """
     Remove and parse the pipeline bits in XML job definition *conf*.
-    '''
+    """
     tree = ElementTree.fromstring(conf)
     rbt_elt = tree.find('.//jenkins.triggers.ReverseBuildTrigger')
     if rbt_elt is not None:
@@ -50,12 +50,12 @@ def _format_xml_tree(tree):
 
 
 def merge_pipeline_conf(conf, parents, link_type):
-    '''
+    """
     Merge back pipeline informations in job configuration *conf*.
 
     *parents* is a list of parent jobs names, and *link_type* the relationship
     to them (one of "SUCCESS", "UNSTABLE" or "FAILURE").
-    '''
+    """
     tree = ElementTree.fromstring(conf)
     trigger = _create_elt('jenkins.triggers.ReverseBuildTrigger')
     trigger.append(_create_elt('spec'))
@@ -80,7 +80,7 @@ def _create_elt(tag, text=None):
 
 def render_job(templates_dir, template, context, pipe_info, insert_hash=False,
                context_overrides={}):
-    '''
+    """
     Render a job XML from job definition.
 
     If *insert_hash* is true, also include a hash of the configuration as text
@@ -99,7 +99,7 @@ def render_job(templates_dir, template, context, pipe_info, insert_hash=False,
         a ``(rendered_job, template_files)`` tuple, where
         ``template_files`` is the set of files that were loaded to render the
         job XML
-    '''
+    """
     rendered, files = templates.render(templates_dir, template, context,
                                        context_overrides=context_overrides)
     rendered = rendered.strip()
@@ -113,9 +113,9 @@ def render_job(templates_dir, template, context, pipe_info, insert_hash=False,
 
 
 def get_conf_hash(conf):
-    '''
+    """
     Get a hash uniquely representing the XML job configuration *conf*.
-    '''
+    """
     hobj = hashlib.sha1()
     tree = ElementTree.fromstring(conf)
     for element in tree.iter():
@@ -130,9 +130,9 @@ def get_conf_hash(conf):
 
 
 def append_hash_in_description(conf):
-    '''
+    """
     Append the *conf* hash at the end of its description.
-    '''
+    """
     conf_hash = get_conf_hash(conf)
     tree = ElementTree.fromstring(conf)
     description_elt = tree.find('.//description')
@@ -143,13 +143,13 @@ def append_hash_in_description(conf):
 
 
 def extract_hash_from_description(conf):
-    '''
+    """
     Extract jenskiper hash tag from job *conf*'s description.
 
     Return a ``(hash, pruned_conf)`` tuple, with *hash* the job's hash and
     *pruned_conf* the configuration XML the hash tag removed from its
     description.
-    '''
+    """
     tree = ElementTree.fromstring(conf)
     description_elt = tree.find('.//description')
     if description_elt is None:

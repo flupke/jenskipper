@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 @decorators.context_command
 @decorators.handle_all_errors()
 def diff(jobs_names, base_dir, context_overrides, reverse, names_only):
-    '''
+    """
     Show diffs between JOBS in the local repository and on the server.
 
     If no JOBS are specified, diff all jobs.
@@ -45,7 +45,7 @@ def diff(jobs_names, base_dir, context_overrides, reverse, names_only):
         2: a job is present in the repository but not on the server
 
         3: repository and server are not in sync
-    '''
+    """
     if not HAVE_LXML:
         click.secho('This command works better if you install lxml:',
                     fg='yellow', bold=True)
@@ -69,7 +69,7 @@ def diff(jobs_names, base_dir, context_overrides, reverse, names_only):
 
 def print_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
                    reverse=False, names_only=False):
-    '''
+    """
     Print the diff between job *job_name* in the repository at *base_dir* and
     the server at *jenkins_url*.
 
@@ -80,7 +80,7 @@ def print_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
     server, unless *reverse* is true.
 
     Return the number of lines in the diff.
-    '''
+    """
     diff = get_job_diff(base_dir, jenkins_url, job_name,
                         context_overrides=context_overrides, reverse=reverse)
     if names_only:
@@ -93,9 +93,9 @@ def print_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
 
 def get_job_diff(base_dir, jenkins_url, job_name, context_overrides=None,
                  reverse=False):
-    '''
+    """
     Get the diff lines printed by :func:`print_job_diff`.
-    '''
+    """
     logger.debug('diffing %s', job_name)
     if context_overrides is None:
         context_overrides = {}

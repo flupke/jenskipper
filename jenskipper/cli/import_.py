@@ -19,9 +19,9 @@ from .. import utils
 @click.argument('dest_dir')
 @decorators.handle_all_errors(for_repos_command=False)
 def import_(jenkins_url, dest_dir):
-    '''
+    """
     Import jobs from JENKINS_URL into DEST_DIR.
-    '''
+    """
     if op.exists(dest_dir):
         utils.sechowrap('Destination dir "%s" already exists' % dest_dir,
                         fg='red', bold=True)
@@ -42,7 +42,7 @@ def import_(jenkins_url, dest_dir):
 
 def write_jobs_templates(base_dir, jenkins_url, jobs_names,
                          allow_overwrite=False):
-    '''
+    """
     Retrieve job templates *jobs_names* from *jenkins_url* server in repository
     at *base_dir*.
 
@@ -52,7 +52,7 @@ def write_jobs_templates(base_dir, jenkins_url, jobs_names,
     If *allow_overwrite* is false, raise a
     :class:`jenskipper.exceptions.OverwriteError` if attempting to overwrite an
     existing file.
-    '''
+    """
     pipes_bits = {}
     jobs_templates = {}
     for job_name in jobs_names:
@@ -79,10 +79,10 @@ def write_jobs_templates(base_dir, jenkins_url, jobs_names,
 
 
 def write_jobs_defs(base_dir, jobs_templates, mode, pad_lines=0):
-    '''
+    """
     Write *jobs_templates* jobs definitions in the YAML file in repository at
     *base_dir*, opening the jobs definition file with *mode*.
-    '''
+    """
     fname = repository.get_jobs_defs_fname(base_dir)
     text = _format_default_jobs_defs(jobs_templates, base_dir)
     with open(fname, mode) as fp:
@@ -91,10 +91,10 @@ def write_jobs_defs(base_dir, jobs_templates, mode, pad_lines=0):
 
 
 def write_pipelines(base_dir, pipes_bits, mode):
-    '''
+    """
     Write pipelines bits *pipes_bits* in the pipelines file of the repository
     in *base_dir*, opening the pipelines file with *mode*.
-    '''
+    """
     fname = repository.get_pipelines_fname(base_dir)
     text = pipelines.format_pipes_bits(pipes_bits)
     with open(fname, mode) as fp:

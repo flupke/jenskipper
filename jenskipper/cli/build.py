@@ -25,9 +25,9 @@ RESULT_COLORS = {
 @decorators.jobs_command(dirty_flag=True)
 @decorators.handle_all_errors()
 def build(jobs_names, base_dir, block, build_parameters):
-    '''
+    """
     Trigger builds for JOBS.
-    '''
+    """
     do_build(jobs_names, base_dir, block, build_parameters)
 
 
@@ -44,12 +44,12 @@ def do_build(jobs_names, base_dir, block, build_parameters):
 
 
 def trigger_builds(jobs_names, base_dir, jenkins_url, parameters):
-    '''
+    """
     Trigger builds for *jobs_names*.
 
     Return a ``(queue_urls, jenkins_url)`` tuple; *queue_urls* can be passed
     to :func:`wait_for_builds` to wait for jobs completion.
-    '''
+    """
     queue_urls = {}
     for name in jobs_names:
         queue_url, jenkins_url = jenkins_api.handle_auth(
@@ -64,7 +64,7 @@ def trigger_builds(jobs_names, base_dir, jenkins_url, parameters):
 
 
 def wait_for_builds(queue_urls, jenkins_url):
-    '''
+    """
     Wait until builds corresponding to *queue_urls* are done.
 
     Return a dict indexed by job names, containing ``(build_url, result,
@@ -75,7 +75,7 @@ def wait_for_builds(queue_urls, jenkins_url):
     representing the build result ("SUCCESS", "UNSTABLE" or "FAILURE").
     *runs_urls* is a (possibly empty) list of sub runs URLs for multi
     configuration projects.
-    '''
+    """
     builds_urls = _get_builds_urls(jenkins_url, queue_urls)
     return _poll_builds(jenkins_url, builds_urls)
 
@@ -83,9 +83,9 @@ def wait_for_builds(queue_urls, jenkins_url):
 def print_build_result(base_dir, jenkins_url, job_name, build_url, result=None,
                        runs_urls=None, prefix='', suffix='',
                        only_log_failures=True):
-    '''
+    """
     Print build results of a job.
-    '''
+    """
     # Get result and/or runs URLs if not given in arguments
     if result is None or runs_urls is None:
         build_infos, jenkins_url = jenkins_api.handle_auth(

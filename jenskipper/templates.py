@@ -7,7 +7,7 @@ from . import utils
 
 
 def render(templates_dir, template, context, context_overrides={}):
-    '''
+    """
     Render a job XML from job definition.
 
     If *insert_hash* is true, also include a hash of the configuration as text
@@ -22,7 +22,7 @@ def render(templates_dir, template, context, context_overrides={}):
         a ``(rendered_template, template_files)`` tuple, where
         ``template_files`` is the set of files that were loaded to render the
         template
-    '''
+    """
     loader = TrackingFileSystemLoader(templates_dir)
     env = jinja2.Environment(loader=loader,
                              autoescape=True,
@@ -33,7 +33,7 @@ def render(templates_dir, template, context, context_overrides={}):
 
 
 def extract_jinja_error(exc_info, fnames_prefix=None):
-    '''
+    """
     Extract relevant informations from a Jinja2 exception.
 
     *exc_info* should be a ``(exc_type, exc_value, traceback)`` tuple, as
@@ -43,7 +43,7 @@ def extract_jinja_error(exc_info, fnames_prefix=None):
     the stack that led to the error, and *error* the description of the error.
 
     Raise a :class:`TypeError` if the error is not a supported Jinja2 error.
-    '''
+    """
     exc_type, exc_value, tb = exc_info
     if exc_type is jinja2.UndefinedError:
         prefix = u'Undefined variable'
@@ -76,12 +76,12 @@ def print_jinja_error(stack_lines, error):
 
 
 class TrackingFileSystemLoader(jinja2.FileSystemLoader):
-    '''
+    """
     A :class:`jinja2.FileSystemLoader` subclass that keeps track of the files
     it loads.
 
     :attr loaded_files: the set of loaded files
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         super(TrackingFileSystemLoader, self).__init__(*args, **kwargs)

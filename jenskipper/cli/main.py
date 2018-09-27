@@ -24,9 +24,9 @@ from .delete import delete
 @click.option('--log-level', '-l',
               type=click.Choice(('debug', 'info', 'warning', 'error')))
 def main(log_level):
-    '''
+    """
     Pilot Jenkins from the command line.
-    '''
+    """
     coloredlogs.install(
         fmt='%(levelname)s %(message)s',
         level=log_level

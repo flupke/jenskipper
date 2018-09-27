@@ -15,12 +15,12 @@ except ImportError:
 
 
 def clean_xml(text):
-    '''
+    """
     Clean XML in *text*
 
     If :mod:`lxml` is available, remove blank text and pretty print it. If
     :mod:`lxml` is not available, return *text* as is.
-    '''
+    """
     text = text.strip()
     if HAVE_LXML:
         parser = etree.XMLParser(remove_blank_text=True)
@@ -50,9 +50,9 @@ def print_jobs_list(label, jobs_names, pad_lines=1, empty_label=None, **style):
 
 
 def replace_auth_in_url(url, username, password):
-    '''
+    """
     Put *username* and *password* in *url*.
-    '''
+    """
     parsed = urlparse.urlparse(url)
     hostport = _get_hostport(parsed)
     netloc = '%s:%s@%s' % (username, password, hostport)
@@ -61,11 +61,11 @@ def replace_auth_in_url(url, username, password):
 
 
 def split_auth_in_url(url):
-    '''
+    """
     Extract authentification bits from *url*.
 
     Return a ``(url_without_auth, username, password)`` tuple.
-    '''
+    """
     parsed = urlparse.urlparse(url)
     hostport = _get_hostport(parsed)
     without_auth = parsed._replace(netloc=hostport)
@@ -73,9 +73,9 @@ def split_auth_in_url(url):
 
 
 def transplant_url_auth(source_url, dest_url):
-    '''
+    """
     Take auth bits from *source_url* and put them in *dest_url*.
-    '''
+    """
     _, username, password = split_auth_in_url(source_url)
     return replace_auth_in_url(dest_url, username, password)
 
@@ -88,7 +88,7 @@ def _get_hostport(parsed_url):
 
 
 def set_path_in_dict(dct, path, value, inplace=False):
-    '''
+    """
     Set value at *path* in *dct* to *value*.
 
     *path* is an iterable containing the path to the value. For example
@@ -96,7 +96,7 @@ def set_path_in_dict(dct, path, value, inplace=False):
 
     By default *dct* is not modfied and a deep copy is returned, unless
     *inplace* is True
-    '''
+    """
     if inplace:
         cur = ret = dct
     else:
@@ -112,12 +112,12 @@ def set_path_in_dict(dct, path, value, inplace=False):
 
 
 def deep_merge(dct_a, dct_b, inplace=False):
-    '''
+    """
     Perform a "deep merge" of *dct_b* into *dct_a*.
 
     Return the merged result, in a new dict if *inplace* is false, or else in
     *dct_a*.
-    '''
+    """
     if inplace:
         ret = dct_a
     else:
@@ -129,19 +129,19 @@ def deep_merge(dct_a, dct_b, inplace=False):
 
 
 def flatten_dict(dct):
-    '''
+    """
     Flatten keys of (possibly nested) *dct*.
 
     >>> flatten_dict({'a': {'b': 'c'}})
     {('a', 'b'): 'c'}
-    '''
+    """
     items = _flatten_dict(dct, ())
     return dict(items)
 
 
 @contextlib.contextmanager
 def add_lxml_syntax_error_context(full_xml, context):
-    '''
+    """
     Augment :class:`lxml.etree.XMLSyntaxError` exceptions for
     :func:`format_lxml_syntax_error`.
 
@@ -150,7 +150,7 @@ def add_lxml_syntax_error_context(full_xml, context):
         with add_lxml_syntax_error_context(full_xml, 'somefile.xml'):
             a_function_that_raises_XMLSyntaxError(full_xml)
 
-    '''
+    """
     if HAVE_LXML:
         try:
             yield
@@ -163,7 +163,7 @@ def add_lxml_syntax_error_context(full_xml, context):
 
 
 def format_lxml_syntax_error(exc, context_lines=5, full_xml=False):
-    '''
+    """
     Format a :class:`lxml.etree.XMLSyntaxError`, showing the error's
     context_lines.
 
@@ -175,7 +175,7 @@ def format_lxml_syntax_error(exc, context_lines=5, full_xml=False):
 
     *context_lines* is the number of lines to show around the error. If
     *full_xml* is true, show the entire XML.
-    '''
+    """
     lines = exc.full_xml.splitlines()
     err_line = exc.lineno - 1
     err_offset = exc.offset - 1

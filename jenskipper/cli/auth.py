@@ -9,9 +9,9 @@ from . import decorators
 @click.command('auth')
 @decorators.repos_command
 def authenticate(base_dir):
-    '''
+    """
     Authenticate against the jenkins server.
-    '''
+    """
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     jenkins_api.handle_auth(base_dir, _open_home, jenkins_url)
 

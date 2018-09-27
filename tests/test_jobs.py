@@ -61,7 +61,7 @@ def test_extract_hash_from_text():
     assert f('foo%s' % h) == ('fff', 'foo')
 
 
-JOB_WITHOUT_PIPELINE = '''<?xml version='1.0' encoding='UTF-8'?>
+JOB_WITHOUT_PIPELINE = """<?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
   <description>€</description>
@@ -102,4 +102,4 @@ JOB_WITHOUT_PIPELINE = '''<?xml version='1.0' encoding='UTF-8'?>
   <builders/>
   <publishers/>
   <buildWrappers/>
-</project>'''  # NOQA
+</project>"""  # NOQA

@@ -16,11 +16,11 @@ from .. import utils
 @decorators.jobs_command(dirty_flag=True)
 @decorators.handle_all_errors()
 def log(jobs_names, base_dir, build_number, show_all):
-    '''
+    """
     Show logs of JOBS.
 
     If no JOBS are specified, show logs of all jobs.
-    '''
+    """
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     for job_name in jobs_names:
         builds, jenkins_url = _get_job_builds(jenkins_url, base_dir, job_name)

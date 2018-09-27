@@ -18,11 +18,11 @@ def get_user_conf_fname():
 
 
 def get_user_conf():
-    '''
+    """
     Get the global user configuration.
 
     Return a :class:`configobj.ConfigObj` object.
-    '''
+    """
     fname = get_user_conf_fname()
     dirname = op.dirname(fname)
     if not op.exists(dirname):
@@ -31,20 +31,20 @@ def get_user_conf():
 
 
 def get_repository_conf(base_dir):
-    '''
+    """
     Get the configuration for repository in *base_dir*.
 
     Return a :class:`configobj.ConfigObj` object.
-    '''
+    """
     fname = repository.get_conf_fname(base_dir)
     return configobj.ConfigObj(fname)
 
 
 def get_conf(base_dir):
-    '''
+    """
     Get the actual configuration, built by merging the repository conf into the
     global user conf.
-    '''
+    """
     user_conf = get_user_conf()
     repos_conf = get_repository_conf(base_dir)
     configspec_fname = op.join(THIS_DIR, 'confspec.ini')
@@ -70,10 +70,10 @@ def print_validation_errors(config, results):
 
 
 def get(base_dir, path):
-    '''
+    """
     Get the value at *path* in the merged configurations (the configuration in
     base_dir + the user's configuration).
-    '''
+    """
     obj = get_conf(base_dir)
     keys = list(path)
     while keys:
@@ -83,19 +83,19 @@ def get(base_dir, path):
 
 
 def set_in_user(path, value):
-    '''
+    """
     Write *value* in setting at *path*, in the global user configuration.
-    '''
+    """
     conf = get_user_conf()
     utils.set_path_in_dict(conf, path, value, inplace=True)
     conf.write()
 
 
 def set_in_repos(base_dir, path, value):
-    '''
+    """
     Write *value* in setting at *path*, in the repository configuration in
     *base_dir*.
-    '''
+    """
     conf = get_repository_conf(base_dir)
     utils.set_path_in_dict(conf, path, value, inplace=True)
     conf.write()

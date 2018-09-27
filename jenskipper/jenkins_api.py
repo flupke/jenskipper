@@ -11,14 +11,14 @@ from . import utils
 
 
 def handle_auth(base_dir, func, jenkins_url, *args, **kwargs):
-    '''
+    """
     Run an API function, handling authentication errors in an user-friendly
     way.
 
     *args* and *kwargs* are passed to *func*. Return a ``(ret, jenkins_url)``
     tuple, with *ret* the return value of *func* and *jenkins_url* the URL with
     correct auth bits in it.
-    '''
+    """
     # Search auth in conf, unless it's contained in the URL
     canonical_url, username, password = utils.split_auth_in_url(jenkins_url)
     if username is None and password is None:
@@ -58,9 +58,9 @@ def handle_auth(base_dir, func, jenkins_url, *args, **kwargs):
 
 
 def list_jobs(jenkins_url):
-    '''
+    """
     Get the names of jobs on the *jenkins_url* server.
-    '''
+    """
     data = get_object(jenkins_url, '')
     return [j['name'] for j in data['jobs']]
 
@@ -70,9 +70,9 @@ def _get_job_config_url(jenkins_url, name):
 
 
 def get_job_config(jenkins_url, name):
-    '''
+    """
     Get the XML configuration for job *name* in *jenkins_url*.
-    '''
+    """
     url = _get_job_config_url(jenkins_url, name)
     resp = requests.get(url)
     try:
@@ -85,7 +85,7 @@ def get_job_config(jenkins_url, name):
 
 
 def push_job_config(jenkins_url, name, config, allow_create=True):
-    '''
+    """
     Replace the configuration of job *name* at *jenkins_url* with *config* (a
     XML string).
 
@@ -95,7 +95,7 @@ def push_job_config(jenkins_url, name, config, allow_create=True):
 
     If *allow_create* is true, attempt to create the job if it does not exist
     on the server.
-    '''
+    """
     url = _get_job_config_url(jenkins_url, name)
     resp = requests.post(url, config)
     try:
@@ -123,18 +123,18 @@ def _get_credentials(jenkins_url):
 
 
 def delete_job(jenkins_url, name):
-    '''
+    """
     Delete job named *name* on server at *jenkins_url*.
-    '''
+    """
     url = urlparse.urljoin(jenkins_url, '/job/%s/doDelete' % name)
     resp = requests.post(url)
     resp.raise_for_status()
 
 
 def rename_job(jenkins_url, name, new_name):
-    '''
+    """
     Rename job *name* to *new_name* on server at *jenkins_url*.
-    '''
+    """
     url = urlparse.urljoin(jenkins_url,
                            '/job/%s/doRename?newName=%s' % (name, new_name))
     resp = requests.post(url)
@@ -142,9 +142,9 @@ def rename_job(jenkins_url, name, new_name):
 
 
 def create_job(jenkins_url, name, conf):
-    '''
+    """
     Create a new job named *name* with *conf* on server at *jenkins_url*.
-    '''
+    """
     url = urlparse.urljoin(jenkins_url, '/createItem?name=%s' %
                            urllib.quote_plus(name))
     resp = requests.post(url, conf,
@@ -153,14 +153,14 @@ def create_job(jenkins_url, name, conf):
 
 
 def build_job(jenkins_url, job_name, parameters=None):
-    '''
+    """
     Trigger a build for *job_name*.
 
     To trigger a parametrized build, pass a dict containing the build
     parameters in *parameters*.
 
     Return the URL of the item in the builds queue.
-    '''
+    """
     if parameters:
         url = urlparse.urljoin(jenkins_url,
                                '/job/%s/buildWithParameters' % job_name)
@@ -178,12 +178,12 @@ def build_job(jenkins_url, job_name, parameters=None):
 
 
 def get_build_log(jenkins_url, build_url):
-    '''
+    """
     Retrieve the log for build at *build_url*.
 
     *build_url* is expected to be a full URL, as returned by
     :func:`jenskipper.cli.build.wait_for_builds`.
-    '''
+    """
     _, username, password = utils.split_auth_in_url(jenkins_url)
     build_url = utils.replace_auth_in_url(build_url, username, password)
     url = urlparse.urljoin(build_url, 'consoleText')
@@ -193,13 +193,13 @@ def get_build_log(jenkins_url, build_url):
 
 
 def get_object(jenkins_url, path_or_url):
-    '''
+    """
     Get data from the ``api/json`` page of *path_or_url* in *jenkins_url*.
 
     *path_or_url* can be a path relative to *jenkins_url* or a full jenkins URL
     (usefull for URLs coming from the Jenkins API that do not carry login
     information).
-    '''
+    """
     parsed = urlparse.urlparse(path_or_url)
     url = urlparse.urljoin(jenkins_url, '%s/api/json' % parsed.path)
     resp = requests.get(url)
@@ -208,9 +208,9 @@ def get_object(jenkins_url, path_or_url):
 
 
 def toggle_job(jenkins_url, job_name, enable):
-    '''
+    """
     Enable or disable a job.
-    '''
+    """
     url = urlparse.urljoin(jenkins_url,
                            '/job/%s/%s' %
                            (job_name, 'enable' if enable else 'disable'))
@@ -219,11 +219,11 @@ def toggle_job(jenkins_url, job_name, enable):
 
 
 def get_artifact(jenkins_url, job_name, build, artifact_name, node_name):
-    '''
+    """
     Get a build artifact.
 
     Return a :class:`requests.Response` object.
-    '''
+    """
     path = '/job/%s/%s' % (job_name, build)
     if node_name is not None:
         path += '/nodes=%s' % node_name

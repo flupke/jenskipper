@@ -18,20 +18,20 @@ logger = logging.getLogger(__name__)
 @decorators.repos_command
 @decorators.jobs_command()
 def print_dirty_jobs(jobs_names, base_dir):
-    '''
+    """
     Print the list of jobs with uncommitted changes in the current repository.
-    '''
+    """
     dirty_jobs = get_dirty_jobs(base_dir, jobs_names)
     print '\n'.join(sorted(dirty_jobs))
 
 
 def get_dirty_jobs(base_dir, jobs_names=None):
-    '''
+    """
     Get the list of dirty job names in the jenskipper repository at *base_dir*.
 
     If *jobs_names* is given, it should be a list of the jobs to examine. The
     default is to examine all jobs.
-    '''
+    """
     # Get the list of dirty files in the repository
     vcs = _get_vcs(base_dir)
     if vcs == 'git':

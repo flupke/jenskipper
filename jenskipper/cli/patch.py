@@ -17,14 +17,14 @@ from . import diff
 @click.argument('fname', type=click.Path(exists=True, dir_okay=False,
                                          writable=True))
 def patch(jobs_names, base_dir, fname):
-    '''
+    """
     Try to patch FNAME with the diff between local and remote versions of a
     job.
 
     WARNING: this may not always work and does not take into account the Jinja
     macros. Always check your diffs before commiting changes made by this
     command.
-    '''
+    """
     jenkins_url = conf.get(base_dir, ['server', 'location'])
 
     # Get diff

@@ -19,12 +19,12 @@ TEMP_JOBS_INFIX = '.JK_TEST'
 @decorators.context_command
 @decorators.handle_all_errors()
 def test(jobs_names, base_dir, context_overrides, build_parameters):
-    '''
+    """
     Create temporary copies of JOBS and execute them.
 
     This command blocks until all jobs are done. Jobs that succeeded are
     deleted, and failures are kept for inspection.
-    '''
+    """
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     new_jobs_names, jenkins_url = _create_temp_jobs(jobs_names,
                                                     base_dir,

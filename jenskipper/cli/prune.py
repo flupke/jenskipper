@@ -14,9 +14,9 @@ from .. import conf
 @decorators.repos_command
 @decorators.handle_all_errors()
 def prune(base_dir, confirm):
-    '''
+    """
     Remove all jobs on the server that are not present in the repository.
-    '''
+    """
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     repos_jobs = repository.get_jobs_defs(base_dir)
     server_jobs, jenkins_url = jenkins_api.handle_auth(base_dir,

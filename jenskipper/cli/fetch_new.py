@@ -18,12 +18,12 @@ from .. import utils
 @decorators.repos_command
 @decorators.handle_all_errors()
 def fetch_new(base_dir, force, selected_jobs):
-    '''
+    """
     Fetch new jobs in an existing repository.
 
     You can specify which jobs to fetch with JOBS. If no JOBS are specified,
     fetch all new jobs.
-    '''
+    """
     jenkins_url = conf.get(base_dir, ['server', 'location'])
     repos_jobs = repository.get_jobs_defs(base_dir)
     server_jobs, jenkins_url = jenkins_api.handle_auth(base_dir,

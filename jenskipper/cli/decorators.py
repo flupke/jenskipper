@@ -19,9 +19,9 @@ from .. import templates
 
 
 def repos_command(func):
-    '''
+    """
     Base options for repository commands.
-    '''
+    """
 
     @click.option('--jk-dir', '-D', default='.', help='Location of the '
                   'jenskipper repository (default: the current directory).')
@@ -35,7 +35,7 @@ def repos_command(func):
 
 def jobs_command(num_jobs=-1, dirty_flag=False, allow_unknown=False,
                  default_to_all=True):
-    '''
+    """
     Base options for jobs that take a list of jobs names.
 
     Expects a *base_dir* argument, so normally used after ``@repos_command``.
@@ -52,7 +52,7 @@ def jobs_command(num_jobs=-1, dirty_flag=False, allow_unknown=False,
 
     *default_to_all* controls whether passing no jobs on the command line means
     all jobs or not.
-    '''
+    """
     if dirty_flag and allow_unknown:
         raise ValueError('cannot use dirty_flag and allow_unknown together')
 
@@ -100,9 +100,9 @@ def jobs_command(num_jobs=-1, dirty_flag=False, allow_unknown=False,
 
 
 def handle_conf_errors(func):
-    '''
+    """
     Print nice error messages on configuration validation errors.
-    '''
+    """
     # TODO: find more DRY way to handle these exceptions
 
     @functools.wraps(func)
@@ -118,13 +118,13 @@ def handle_conf_errors(func):
 
 
 def context_command(func):
-    '''
+    """
     Base options for jobs that can override context variables on the command
     line.
 
     The command receives a *context_overrides* argument, a dict ready to be
     deep merged in templates contexts.
-    '''
+    """
 
     @click.option('--context', '-c', 'context_vars', multiple=True,
                   metavar='VAR=VALUE', help='Override context VAR with '
@@ -147,9 +147,9 @@ def context_command(func):
 
 
 def build_command(func):
-    '''
+    """
     Common options and mechanisms for commands that trigger builds.
-    '''
+    """
 
     @click.option('--parameter', '-p', 'build_parameters',
                   metavar='PARAM=VALUE', multiple=True,
@@ -207,11 +207,11 @@ def parse_build_parameters(specs):
 
 
 def handle_jinja_errors(func):
-    '''
+    """
     Print nice error messages on jinja exceptions.
 
     Expect a *base_dir* argument, so normally used after ``@repos_command``.
-    '''
+    """
 
     @functools.wraps(func)
     def wrapper(base_dir, **kwargs):
@@ -230,9 +230,9 @@ def handle_jinja_errors(func):
 
 
 def handle_yaml_errors(func):
-    '''
+    """
     Print nice error messages on yaml parse errors.
-    '''
+    """
 
     @functools.wraps(func)
     def wrapper(**kwargs):
@@ -246,9 +246,9 @@ def handle_yaml_errors(func):
 
 
 def handle_lxml_syntax_errors():
-    '''
+    """
     Prints nice error messages on :class:`lxml.etree.XMLSyntaxError`.
-    '''
+    """
 
     def decorator(func):
         if HAVE_LXML:
@@ -275,12 +275,12 @@ def handle_lxml_syntax_errors():
 
 
 def handle_all_errors(for_repos_command=True):
-    '''
+    """
     Return a decorator that regroups all the error handling decorators.
 
     Set *for_repos_command* to false for commands not operating inside a
     Jenskipper repository.
-    '''
+    """
 
     def decorator(func):
         if for_repos_command:
