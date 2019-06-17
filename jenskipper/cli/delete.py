@@ -45,6 +45,6 @@ def delete(jobs_names, base_dir, confirm):
         except requests.HTTPError as exc:
             if exc.response.status_code == 404:
                 click.secho('%s was not found' % name, fg='red')
-                exit_code = 1
+                exit_code = 5
 
     sys.exit(exit_code)
