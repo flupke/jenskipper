@@ -38,7 +38,7 @@ def handle_auth(base_dir, func, jenkins_url, *args, **kwargs):
             ret = func(jenkins_url, *args, **kwargs)
             break
         except requests.HTTPError as exc:
-            if exc.response.status_code == 401:
+            if exc.response.status_code in (401, 403, 500):
                 jenkins_url = _get_credentials(jenkins_url)
                 user_gave_auth = True
             else:
