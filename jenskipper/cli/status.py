@@ -62,7 +62,7 @@ def _print_job_status(base_dir, jenkins_url, job_name, status_only,
         else:
             lines_prefix = ''
         print '%sStatus: %s' % (lines_prefix, status)
-        if status is 'never built':
+        if status == 'never built':
             sys.exit(0)
 
         print '%sLast completed: %s' % (

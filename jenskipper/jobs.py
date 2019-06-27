@@ -165,7 +165,7 @@ def extract_hash_from_description(conf):
 
 
 def extract_hash_from_text(text):
-    match = re.search('(\r?\n){0,2}-\*- jenskipper-hash: ([0-9a-f]+) -\*-',
+    match = re.search(r'(\r?\n){0,2}-\*- jenskipper-hash: ([0-9a-f]+) -\*-',
                       text, re.MULTILINE)
     if match:
         conf_hash = match.group(2)

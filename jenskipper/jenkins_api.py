@@ -102,9 +102,9 @@ def push_job_config(jenkins_url, name, config, allow_create=True):
         resp.raise_for_status()
     except requests.HTTPError as exc:
         if exc.response.status_code == 500:
-            match = re.search('java.io.IOException: Expecting class '
-                              '([^\d\W][\w.]*) but got class ([^\d\W][\w.]*) '
-                              'instead', exc.response.text)
+            match = re.search(r'java.io.IOException: Expecting class '
+                              r'([^\d\W][\w.]*) but got class ([^\d\W][\w.]*) '
+                              r'instead', exc.response.text)
             if match is not None:
                 expected_type, pushed_type = match.groups()
                 raise exceptions.JobTypeMismatch(expected_type, pushed_type)
