@@ -65,7 +65,8 @@ def push(context, jobs_names, base_dir, force, allow_overwrite,
     utils.print_jobs_list('Jobs not pushed:', remaining_jobs, fg='yellow')
     utils.print_jobs_list('Pushed jobs:', pushed_jobs, fg='green')
     if trigger_builds:
-        build.do_build(jobs_names, base_dir, block_builds, build_parameters)
+        build.do_build(session, jobs_names, base_dir, block_builds,
+                       build_parameters)
 
 
 def _check_for_gui_modifications(context, session, base_dir, jobs_names,
