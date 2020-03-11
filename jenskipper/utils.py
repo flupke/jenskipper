@@ -1,6 +1,6 @@
 import os
 import copy
-import collections
+import collections.abc
 import contextlib
 import re
 
@@ -225,7 +225,7 @@ def _flatten_dict(dct, ancestors=()):
     items = []
     for key, value in dct.items():
         path = ancestors + (key,)
-        if isinstance(value, collections.Mapping):
+        if isinstance(value, collections.abc.Mapping):
             items.extend(_flatten_dict(value, path))
         else:
             items.append((path, value))
